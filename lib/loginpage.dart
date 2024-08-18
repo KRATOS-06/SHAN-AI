@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:gym_management/signinpage.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -32,7 +33,8 @@ class _LoginPageState extends State<LoginPage> {
                       end: Alignment.bottomCenter,
                       colors: [
                         //Color(0xffffff0586).withOpacity(0.6),Color(0xffffff0586),
-                        Color(0xffff990615).withOpacity(0.8),Colors.black
+                       // Color(0xffff990615).withOpacity(0.8),Colors.black
+                        Color(0xffff79BED6).withOpacity(0.4),Color(0xffff25aee2)
                       ]
                     )
                   ),
@@ -49,16 +51,17 @@ class _LoginPageState extends State<LoginPage> {
                   child: SizedBox(
                     width: 350,
                     child: TextField(
-                      style: TextStyle(color: Colors.black,fontSize: 30),
+                      style: TextStyle(color: Colors.black,fontSize: 22),
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.account_circle_rounded,size: 40,),
+                        prefixIcon: Icon(Icons.account_circle_rounded,size: 30,),
 
                         hintText: "Name",
-                        hintStyle: TextStyle(color: Colors.grey,fontSize: 30),
+                        hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.4),
                         border:OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
+
+                          borderSide: BorderSide(width: 100.0,color: Colors.green),
                           borderRadius: BorderRadius.circular(25.0)
                         )
                       ),
@@ -66,17 +69,17 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Positioned(
-                  top: 420,
+                  top: 410,
                   left: 35,
                   child: SizedBox(
                     width: 350,
                     child: TextField(
-                      style: TextStyle(color: Colors.black,fontSize: 30),
+                      style: TextStyle(color: Colors.black,fontSize: 22),
                       decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.email_outlined,size: 40,),
+                          prefixIcon: Icon(Icons.email_outlined,size: 30,),
 
                           hintText: "Email",
-                          hintStyle: TextStyle(color: Colors.grey,fontSize: 30),
+                          hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.4),
                           border:OutlineInputBorder(
@@ -88,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Positioned(
-                  top:520,
+                  top:530,
                   left: 10,
                   child: Row(
                     children: [
@@ -110,27 +113,28 @@ class _LoginPageState extends State<LoginPage> {
 
                 ),
                 Positioned(
-                  top: 580,
+                  top: 600,
                   left:110,
                   child: Container(
                       width: 200,
                       height: 60,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              colors: [Colors.yellow,Colors.yellow,Colors.yellow,Colors.white]
-                          ),
+                        color: Color(0xffff066589),
+
                           borderRadius: BorderRadius.circular(25.0)
                       ),
-                      child: TextButton(onPressed: (){}, child: Text("LOGIN",style: TextStyle(color: Colors.black,fontSize: 20),))
+                      child: TextButton(onPressed: (){}, child: Text("LOGIN",style: TextStyle(color: Colors.white,fontSize: 20),))
                   ),
                 ),
                 Positioned(
-                  bottom: 170,
+                  bottom: 120,
                   child: Row(
                     children: [
                       TextButton(onPressed: (){}, child: Text(" Don’t you  have an Account?",style: TextStyle(color: Colors.white,fontSize: 18),)),
-                      TextButton(onPressed: (){}, child: Text("           Sign up?",style: TextStyle(color: Colors.white,fontSize: 18),))
+                      TextButton(onPressed: (){
+                        Navigator.push(context,MaterialPageRoute(builder: (context)=> SignInPage()));
+                      }, child: Text("           Sign up?",style: TextStyle(color: Colors.white,fontSize: 18),))
                     ],
                   ),
                 )
