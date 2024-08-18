@@ -89,6 +89,7 @@ class _SignInPageState extends State<SignInPage> {
                 child: SizedBox(
                   width: 350,
                   child: TextField(
+                    obscureText: true,
                     style: TextStyle(color: Colors.black,fontSize: 22),
                     decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock_open,size: 30,),
