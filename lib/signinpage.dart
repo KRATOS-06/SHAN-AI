@@ -28,19 +28,19 @@ class _SignInPageState extends State<SignInPage> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Color(0xffff79BED6).withOpacity(0.4),Color(0xffff25aee2)
+                          Color(0xffff22D6E0),Color(0xffff79BED6).withOpacity(0.4),
                         ]
                     )
                 ),
 
               ),
               Positioned(
-                  top: 180,
+                  top: 60,
                   left: 30,
-                  child: Text("Create Your Account",style: TextStyle(color: Colors.white,fontSize: 40,fontStyle: FontStyle.italic),)
+                  child: Text("    Create Account",style: TextStyle(color: Colors.black,fontSize: 40,fontStyle: FontStyle.italic),)
               ),
               Positioned(
-                top: 300,
+                top: 130,
                 left: 35,
                 child: SizedBox(
                   width: 350,
@@ -49,7 +49,7 @@ class _SignInPageState extends State<SignInPage> {
                     decoration: InputDecoration(
                         prefixIcon: Icon(Icons.account_circle_rounded,size: 30,),
 
-                        hintText: "Name",
+                        hintText: "First Name",
                         hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.4),
@@ -62,7 +62,29 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
               Positioned(
-                top: 420,
+                top: 210,
+                left: 35,
+                child: SizedBox(
+                  width: 350,
+                  child: TextField(
+                    style: TextStyle(color: Colors.black,fontSize: 22),
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.account_circle_rounded,size: 30,),
+
+                        hintText: "Last Name",
+                        hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.4),
+                        border:OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                            borderRadius: BorderRadius.circular(25.0)
+                        )
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 290,
                 left: 35,
                 child: SizedBox(
                   width: 350,
@@ -84,7 +106,29 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
               Positioned(
-                top: 540,
+                top: 370,
+                left: 35,
+                child: SizedBox(
+                  width: 350,
+                  child: TextField(
+                    style: TextStyle(color: Colors.black,fontSize: 22),
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.phone,size: 30,),
+
+                        hintText: "Mobile Number",
+                        hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.4),
+                        border:OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                            borderRadius: BorderRadius.circular(25.0)
+                        )
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 450,
                 left: 35,
                 child: SizedBox(
                   width: 350,
@@ -107,7 +151,99 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
               Positioned(
-                top: 680,
+                top: 530,
+                left: 35,
+                child: SizedBox(
+                  width: 350,
+                  child: TextField(
+                    obscureText: true,
+                    style: TextStyle(color: Colors.black,fontSize: 22),
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.lock_open,size: 30,),
+
+                        hintText: "Confirm Password",
+                        hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.4),
+                        border:OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                            borderRadius: BorderRadius.circular(25.0)
+                        )
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 610,
+                left: 35,
+                child: SizedBox(
+                  width: 200,
+                  child: TextField(
+                    obscureText: true,
+                    style: TextStyle(color: Colors.black,fontSize: 22),
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.location_on_outlined,size: 30,),
+
+                        hintText: "City",
+                        hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.4),
+                        border:OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                            borderRadius: BorderRadius.circular(25.0)
+                        )
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 610,
+                left: 240,
+                child: SizedBox(
+                  width: 170,
+                  child: TextField(
+                    obscureText: true,
+                    style: TextStyle(color: Colors.black,fontSize: 22),
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.security_outlined,size: 30,),
+
+                        hintText: "Zip Code",
+                        hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.4),
+                        border:OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                            borderRadius: BorderRadius.circular(25.0)
+                        )
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 690,
+                left: 35,
+                child: SizedBox(
+                  width: 350,
+                  child: TextField(
+                    obscureText: true,
+                    style: TextStyle(color: Colors.black,fontSize: 22),
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.map,size: 30,),
+
+                        hintText: "Country",
+                        hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.4),
+                        border:OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                            borderRadius: BorderRadius.circular(25.0)
+                        )
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 770,
                 left:110,
                 child: Container(
                     width: 200,
