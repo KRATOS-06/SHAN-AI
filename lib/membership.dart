@@ -34,28 +34,30 @@ class _MembershipPlansScreenState extends State<MembershipPlansScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Color(0xff00b2b2),
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            size: 30,
+            size: screenWidth * 0.07,
           ),
           onPressed: () {
             Navigator.pop(context);
           },
-          color: Colors.black, // Ensure the back button is visible
+          color: Colors.black,
         ),
         backgroundColor: Color(0xff00b2b2),
         elevation: 0,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+            padding: EdgeInsets.only(right: screenWidth * 0.04),
             child: Image.asset(
               'assets/gym_logo.png',
-              // Adjust the path to where you save your image
-              height: 120, // Adjust the height as per your need
+              height: screenHeight * 0.08,
             ),
           ),
         ],
@@ -73,7 +75,11 @@ class _MembershipPlansScreenState extends State<MembershipPlansScreen> {
 class MembershipPlans extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -88,39 +94,36 @@ class MembershipPlans extends StatelessWidget {
                     Text(
                       'MEMBERSHIP',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(width: 8),
+                    SizedBox(width: screenWidth * 0.02),
                     Text(
                       'PLANS',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: screenHeight * 0.01),
                 Container(
-                  width: 200, // Width of the underline
-                  child: Container(
-                    height: 3,
-                    width: double.infinity,
-                    color: Colors.black,
-                  ),
+                  width: screenWidth * 0.5,
+                  height: screenHeight * 0.004,
+                  color: Colors.black,
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: screenHeight * 0.03),
             MembershipCard(
               planType: 'Basic',
               price: '\$100',
               description:
-                  'Start strong with the essentials, and build your fitness foundation.',
+              'Start strong with the essentials, and build your fitness foundation.',
               features: [
                 'Essential gym access',
                 'Personalized workout routine',
@@ -135,7 +138,7 @@ class MembershipPlans extends StatelessWidget {
               planType: 'Premium',
               price: '\$950',
               description:
-                  'Push beyond your limits, and achieve elite-level results.',
+              'Push beyond your limits, and achieve elite-level results.',
               features: [
                 '24/7 Premium access',
                 'Personal training',
@@ -150,7 +153,7 @@ class MembershipPlans extends StatelessWidget {
               planType: 'Lite',
               price: '\$500',
               description:
-                  'Challenge yourself to grow, and elevate your workout routine.',
+              'Challenge yourself to grow, and elevate your workout routine.',
               features: [
                 'Full gym access',
                 'Group classes',
@@ -161,44 +164,43 @@ class MembershipPlans extends StatelessWidget {
               color2: Colors.blueAccent,
               ribbonColor: Colors.purple,
             ),
-            SizedBox(height: 20),
-
-            // Image and text for 'Terms & Conditions'
+            SizedBox(height: screenHeight * 0.03),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/ques1.png', // Make sure the image path is correct
-                  height: 24,
+                  'assets/ques1.png',
+                  height: screenHeight * 0.03,
                 ),
-                SizedBox(width: 8),
+                SizedBox(width: screenWidth * 0.02),
                 Text(
                   'Terms & Conditions',
-                  style: TextStyle(color: Colors.grey.shade800),
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontSize: screenWidth * 0.04,
+                  ),
                 ),
               ],
             ),
-
-            SizedBox(height: 10),
-
-            // Image and text for 'Privacy Policy'
+            SizedBox(height: screenHeight * 0.015),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/save.png', // Use the newly uploaded image
-                  height: 20, // Set the height of the image to 20
+                  'assets/save.png',
+                  height: screenHeight * 0.025,
                 ),
-                SizedBox(width: 8),
+                SizedBox(width: screenWidth * 0.02),
                 Text(
                   'Privacy Policy',
-                  style: TextStyle(color: Colors.grey.shade800),
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontSize: screenWidth * 0.04,
+                  ),
                 ),
               ],
             ),
-            SizedBox(
-              height: 30,
-            )
+            SizedBox(height: screenHeight * 0.04),
           ],
         ),
       ),
@@ -227,85 +229,106 @@ class MembershipCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
       child: Container(
-        width: 300,
+        width: screenWidth * 0.85,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [color1, color2],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(screenWidth * 0.075),
           border: Border.all(
             color: Colors.deepPurpleAccent,
-            width: 3,
+            width: screenWidth * 0.007,
           ),
           boxShadow: [
             BoxShadow(
               color: Colors.black26,
-              blurRadius: 10,
-              offset: Offset(0, 5),
+              blurRadius: screenWidth * 0.03,
+              offset: Offset(0, screenHeight * 0.005),
             ),
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(screenWidth * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 planType,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: screenWidth * 0.06,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: screenHeight * 0.03),
               Text(
                 description,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: screenWidth * 0.04,
                   color: Colors.black54,
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
               Text(
                 price,
                 style: TextStyle(
-                  fontSize: 36,
+                  fontSize: screenWidth * 0.09,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
               for (String feature in features)
                 Row(
                   children: [
-                    Icon(Icons.check, color: Colors.black),
-                    SizedBox(width: 10),
+                    Icon(
+                      Icons.check,
+                      color: Colors.black,
+                      size: screenWidth * 0.05,
+                    ),
+                    SizedBox(width: screenWidth * 0.025),
                     Expanded(
                       child: Text(
                         feature,
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: screenWidth * 0.04),
                       ),
                     ),
                   ],
                 ),
-              SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.025),
               Align(
                 alignment: Alignment.center,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => PaymentPage()));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PaymentPage()),
+                    );
                   },
-                  child: Text('JOIN NOW'),
+                  child: Text(
+                    'JOIN NOW',
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.045,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ribbonColor,
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.1,
+                      vertical: screenHeight * 0.02,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(screenWidth * 0.025),
+                    ),
                   ),
                 ),
               ),

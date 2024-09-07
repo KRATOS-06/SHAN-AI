@@ -16,6 +16,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -23,16 +25,16 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         body: SingleChildScrollView(
           child: Container(
-            height: MediaQuery.of(context).size.height,
+            height: screenSize.height,
             child: Stack(
               children: [
                 Positioned(
-                  top: 30,
-                  right: 5,
-                  left: 10,
+                  top: screenSize.height * 0.04,
+                  right: screenSize.width * 0.01,
+                  left: screenSize.width * 0.02,
                   child: Container(
-                    height: 800,
-                    width: 500,
+                    height: screenSize.height * 0.5,
+                    width: screenSize.width * 0.9,
                     child: Image.asset(
                       'assets/image2.png',
                       fit: BoxFit.cover,
@@ -43,35 +45,38 @@ class _LoginPageState extends State<LoginPage> {
                   height: double.infinity,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
                         Color(0xffff79BED6).withOpacity(0.4),
-                        Color(0xffff22D6E0).withOpacity(0.6)
-                      ])),
-                ),
-                Positioned(
-                  top: 180,
-                  left: 145,
-                  child: Text(
-                    "LOGIN",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 40,
-                        fontStyle: FontStyle.italic),
+                        Color(0xffff22D6E0).withOpacity(0.6),
+                      ],
+                    ),
                   ),
                 ),
                 Positioned(
-                  top: 250,
-                  left: 35,
-                  right: 35,
+                  top: screenSize.height * 0.22,
+                  left: screenSize.width * 0.35,
+                  child: Text(
+                    "LOGIN",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: screenSize.width * 0.1,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: screenSize.height * 0.32,
+                  left: screenSize.width * 0.08,
+                  right: screenSize.width * 0.08,
                   child: Form(
                     key: formkey,
                     child: Column(
                       children: [
                         SizedBox(
-                          height: 30,
+                          height: screenSize.height * 0.04,
                         ),
                         TextFormField(
                           onSaved: (value) {
@@ -80,32 +85,27 @@ class _LoginPageState extends State<LoginPage> {
                           validator: (email) {
                             if (email == null || email.isEmpty) {
                               return "Please Enter Name";
-                            }
-                            /*else if (!RegExp(
-                                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                .hasMatch(email)) {
-                              return "Please Enter Valid Email Address";
-                            }*/
-                            else if (email != "gym") {
+                            } else if (email != "gym") {
                               return "Invalid Name";
                             }
                             return null;
                           },
-                          style: TextStyle(color: Colors.black, fontSize: 22),
+                          style: TextStyle(color: Colors.black, fontSize: screenSize.width * 0.05),
                           decoration: InputDecoration(
-                              prefixIcon: Icon(
-                                Icons.account_circle_rounded,
-                                size: 30,
-                              ),
-                              hintText: "Name",
-                              hintStyle:
-                                  TextStyle(color: Colors.grey, fontSize: 20),
-                              filled: true,
-                              fillColor: Colors.white.withOpacity(0.4),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(25.0))),
+                            prefixIcon: Icon(
+                              Icons.account_circle_rounded,
+                              size: screenSize.width * 0.07,
+                            ),
+                            hintText: "Name",
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: screenSize.width * 0.05),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.4),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
+                          ),
                         ),
-                        SizedBox(height: 40),
+                        SizedBox(height: screenSize.height * 0.05),
                         TextFormField(
                           onSaved: (value) {
                             _passwordvalue = value ?? "";
@@ -113,8 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                           validator: (password) {
                             if (password == null || password.isEmpty) {
                               return "Please Enter Valid Password";
-                            } else if (password.length < 8 ||
-                                password.length > 15) {
+                            } else if (password.length < 8 || password.length > 15) {
                               return "Password must be 8-15 characters long";
                             } else if (password != "12345678") {
                               return "Invalid Password";
@@ -122,106 +121,116 @@ class _LoginPageState extends State<LoginPage> {
                             return null;
                           },
                           obscureText: true,
-                          style: TextStyle(color: Colors.black, fontSize: 22),
+                          style: TextStyle(color: Colors.black, fontSize: screenSize.width * 0.05),
                           decoration: InputDecoration(
-                              prefixIcon: Icon(
-                                Icons.lock,
-                                size: 30,
-                              ),
-                              hintText: "Password",
-                              hintStyle:
-                                  TextStyle(color: Colors.grey, fontSize: 20),
-                              filled: true,
-                              fillColor: Colors.white.withOpacity(0.4),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(25.0))),
+                            prefixIcon: Icon(
+                              Icons.lock,
+                              size: screenSize.width * 0.07,
+                            ),
+                            hintText: "Password",
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: screenSize.width * 0.05),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.4),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
                 Positioned(
-                  top: 530,
-                  left: 10,
+                  top: screenSize.height * 0.66,
+                  left: screenSize.width * 0.03,
                   child: Row(
                     children: [
                       Transform.scale(
-                        scale: 1.5,
+                        scale: screenSize.width * 0.005,
                         child: Checkbox(
-                            value: ischecked,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                ischecked = value ?? false;
-                              });
-                            }),
+                          value: ischecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              ischecked = value ?? false;
+                            });
+                          },
+                        ),
                       ),
                       Text(
                         "keep logged in",
-                        style: TextStyle(color: Colors.black, fontSize: 20),
+                        style: TextStyle(color: Colors.black, fontSize: screenSize.width * 0.045),
                       ),
                       TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            "       Forget Password?",
-                            style: TextStyle(color: Colors.black, fontSize: 20),
-                          )),
+                        onPressed: () {},
+                        child: Text(
+                          "       Forget Password?",
+                          style: TextStyle(color: Colors.black, fontSize: screenSize.width * 0.045),
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 Positioned(
-                  top: 600,
-                  left: 110,
+                  top: screenSize.height * 0.75,
+                  left: screenSize.width * 0.3,
                   child: Container(
-                      width: 200,
-                      height: 60,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: Color(0xffff066589),
-                          borderRadius: BorderRadius.circular(25.0)),
-                      child: TextButton(
-                          onPressed: () {
-                            if (formkey.currentState!.validate()) {
-                              formkey.currentState!.save();
+                    width: screenSize.width * 0.4,
+                    height: screenSize.height * 0.08,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Color(0xffff066589),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                    child: TextButton(
+                      onPressed: () {
+                        if (formkey.currentState!.validate()) {
+                          formkey.currentState!.save();
 
-                              if (_emailvalue == "gym" &&
-                                  _passwordvalue == "12345678") {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            WorkoutHomePage()));
-                              }
-                            }
-                          },
-                          child: Text(
-                            "LOGIN",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ))),
+                          if (_emailvalue == "gym" && _passwordvalue == "12345678") {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => WorkoutHomePage()),
+                            );
+                          }
+                        }
+                      },
+                      child: Text(
+                        "LOGIN",
+                        style: TextStyle(color: Colors.white, fontSize: screenSize.width * 0.05),
+                      ),
+                    ),
+                  ),
                 ),
                 Positioned(
-                  bottom: 120,
+                  bottom: screenSize.height * 0.10,
+                  left: screenSize.width * 0.02,
+                  right: screenSize.width * 0.02,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                     children: [
                       TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            " Don’t you  have an Account?",
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          )),
+                        onPressed: () {},
+                        child: Text(
+                          "Don’t you  have an Account?",
+                          style: TextStyle(color: Colors.black, fontSize: screenSize.width * 0.045),
+                        ),
+                      ),
                       TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SignInPage()));
-                          },
-                          child: Text(
-                            "           Sign up?",
-                            style: TextStyle(color: Colors.blue, fontSize: 18),
-                          ))
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SignInPage()),
+                          );
+                        },
+                        child: Text(
+                          "Sign up?",
+                          style: TextStyle(color: Colors.blue, fontSize: screenSize.width * 0.045),
+                        ),
+                      ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),

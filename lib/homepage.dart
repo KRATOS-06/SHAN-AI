@@ -13,87 +13,97 @@ class WorkoutHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF00B2B2),
-        elevation: 0, // Removes the shadow
+        elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Image.asset('assets/menu_icon.png'), // Menu icon image
+            icon: Image.asset('assets/menu_icon.png'),
             onPressed: () {
-              Scaffold.of(context).openDrawer(); // Opens the drawer
+              Scaffold.of(context).openDrawer();
             },
           ),
         ),
         title: Align(
           alignment: Alignment.centerRight,
           child: Image.asset(
-            'assets/gym_logo.png', // Your logo image
+            'assets/gym_logo.png',
             height: 65.0,
             fit: BoxFit.contain,
           ),
         ),
       ),
-      backgroundColor: Color(0xFF00B2B2), // Background color
-      drawer: _buildDrawer(context), // Add the drawer here
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20), // Reduced spacing here
-              Text(
-                '   Browse our Workouts to',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Center(
-                child: Text(
-                  'Tune Up',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 25.0,
-                  ),
-                ),
-              ),
-              SizedBox(height: 20), // Added spacing
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: Color(0xFF00B2B2),
+      drawer: _buildDrawer(context),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildGradientCircle('assets/circle1.png'),
-                  SizedBox(width: 20), // Custom spacing between circles
-                  _buildGradientCircle('assets/circle2.png'),
-                  SizedBox(width: 20),
-                  _buildGradientCircle('assets/circle3.png'),
+                  SizedBox(height: constraints.maxHeight * 0.02),
+                  Center(
+                    child: Text(
+                      'Browse our Workouts to',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: constraints.maxWidth * 0.08,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      'Tune Up',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: constraints.maxWidth * 0.07,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: constraints.maxHeight * 0.02),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildResponsiveCircle('assets/circle1.png', constraints),
+                      SizedBox(width: constraints.maxWidth * 0.05),
+                      _buildResponsiveCircle('assets/circle2.png', constraints),
+                      SizedBox(width: constraints.maxWidth * 0.05),
+                      _buildResponsiveCircle('assets/circle3.png', constraints),
+                    ],
+                  ),
+                  SizedBox(height: constraints.maxHeight * 0.02),
+                  _buildWorkoutCard(
+                      'Beginner Workout',
+                      'Start small, stay consistent, and watch your strength and confidence grow.',
+                      'assets/img1.jpg',
+                      constraints),
+                  SizedBox(height: constraints.maxHeight * 0.02),
+                  _buildWorkoutCard(
+                      'Weight Loss',
+                      'Fuel your body with intention, move with purpose, and the results will follow.',
+                      'assets/img2.jpg',
+                      constraints),
+                  SizedBox(height: constraints.maxHeight * 0.02),
+                  _buildWorkoutCard(
+                      'Muscle Building',
+                      'Lift heavy, eat smart, and rest well – the trifecta of muscle growth',
+                      'assets/img3.jpg',
+                      constraints),
+                  SizedBox(height: constraints.maxHeight * 0.02),
+                  _buildWorkoutCard(
+                      'Yoga & Flexibility',
+                      'Stretch your body, calm your mind, and find balance in every breath',
+                      'assets/img4.jpg',
+                      constraints),
+                  SizedBox(height: constraints.maxHeight * 0.02),
+                  _buildFooter(constraints),
                 ],
               ),
-              SizedBox(height: 20),
-              _buildWorkoutCard(
-                  'Beginner Workout',
-                  'Start small, stay consistent, and watch your strength and confidence grow.',
-                  'assets/img1.jpg'),
-              SizedBox(height: 16),
-              _buildWorkoutCard(
-                  'Weight Loss',
-                  'Fuel your body with intention, move with purpose, and the results will follow.',
-                  'assets/img2.jpg'),
-              SizedBox(height: 16),
-              _buildWorkoutCard(
-                  'Muscle Building',
-                  'Lift heavy, eat smart, and rest well – the trifecta of muscle growth',
-                  'assets/img3.jpg'),
-              SizedBox(height: 16),
-              _buildWorkoutCard(
-                  'Yoga & Flexibility',
-                  'Stretch your body, calm your mind, and find balance in every breath',
-                  'assets/img4.jpg'),
-              SizedBox(height: 16), // Added spacing
-              _buildFooter(),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -117,10 +127,10 @@ class WorkoutHomePage extends StatelessWidget {
                     fontSize: 24,
                   ),
                 ),
-                SizedBox(height: 0.0), // Space between the title and the logo
+                SizedBox(height: 0.0),
                 Image.asset(
-                  'assets/gym_logo.png', // Your logo image
-                  height: 150.0, // Adjust the height of the logo as needed
+                  'assets/gym_logo.png',
+                  height: 150.0,
                   fit: BoxFit.contain,
                 ),
               ],
@@ -130,16 +140,13 @@ class WorkoutHomePage extends StatelessWidget {
             leading: Icon(Icons.home),
             title: Text('Home'),
             onTap: () {
-              // Navigate to Home
-              Navigator.pop(context); // Close the drawer
+              Navigator.pop(context);
             },
           ),
           ListTile(
             leading: Icon(Icons.fitness_center),
             title: Text('Plan'),
             onTap: () {
-              // Navigate to Plan
-              // Close the drawer
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -150,8 +157,6 @@ class WorkoutHomePage extends StatelessWidget {
             leading: Icon(Icons.people),
             title: Text('Mentors'),
             onTap: () {
-              // Navigate to Mentors
-              // Close the drawer
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => MentorsPage()));
             },
@@ -160,10 +165,8 @@ class WorkoutHomePage extends StatelessWidget {
             leading: Icon(Icons.shop),
             title: Text('Shop'),
             onTap: () {
-              // Navigate to Shop
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => ShopPage()));
-              // Close the drawer
             },
           ),
           ListTile(
@@ -172,14 +175,12 @@ class WorkoutHomePage extends StatelessWidget {
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ReviewPage()));
-              //Navigator.pop(context); // Close the drawer
             },
           ),
           ListTile(
             leading: Icon(Icons.contact_mail),
             title: Text('Contact Us'),
             onTap: () {
-              // Close the drawer
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ContactUsForm()));
             },
@@ -188,18 +189,15 @@ class WorkoutHomePage extends StatelessWidget {
             leading: Icon(Icons.person),
             title: Text('Profile'),
             onTap: () {
-              // Navigate to Profile
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ProfilePage()));
-              // Close the drawer
             },
           ),
           ListTile(
             leading: Icon(Icons.login),
             title: Text('Logout'),
             onTap: () {
-              // Navigate to Login
-              Navigator.pop(context); // Close the drawer
+              Navigator.pop(context);
             },
           ),
         ],
@@ -207,10 +205,10 @@ class WorkoutHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildGradientCircle(String image) {
+  Widget _buildResponsiveCircle(String image, BoxConstraints constraints) {
     return Container(
-      width: 100,
-      height: 100,
+      width: constraints.maxWidth * 0.25,
+      height: constraints.maxWidth * 0.25,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
@@ -221,30 +219,27 @@ class WorkoutHomePage extends StatelessWidget {
       ),
       child: Center(
         child: Container(
-          width: 80,
-          height: 80,
+          width: constraints.maxWidth * 0.2,
+          height: constraints.maxWidth * 0.2,
           child: Image.asset(image),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.grey[300],
-
-            // Inner circle color
           ),
         ),
       ),
     );
   }
 
-  Widget _buildWorkoutCard(String title, String description, String imageUrl) {
+  Widget _buildWorkoutCard(String title, String description, String imageUrl, BoxConstraints constraints) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10.0),
       ),
-      padding: EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(constraints.maxWidth * 0.04),
       child: Row(
         children: [
-          // Text content on the left side
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,24 +247,28 @@ class WorkoutHomePage extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 18.0,
+                    fontSize: constraints.maxWidth * 0.05,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: constraints.maxHeight * 0.01),
                 Text(
                   description,
                   style: TextStyle(
-                    fontSize: 14.0,
+                    fontSize: constraints.maxWidth * 0.04,
                     color: Colors.grey,
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: constraints.maxHeight * 0.02),
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: constraints.maxHeight * 0.01,
+                      horizontal: constraints.maxWidth * 0.05,
                     ),
                   ),
                   child: Text('Join us'),
@@ -277,11 +276,10 @@ class WorkoutHomePage extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(width: 16.0), // Space between the text and the image
-          // Image on the right side
+          SizedBox(width: constraints.maxWidth * 0.04),
           Container(
-            width: 80.0,
-            height: 80.0,
+            width: constraints.maxWidth * 0.3,
+            height: constraints.maxWidth * 0.3,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
               image: DecorationImage(
@@ -295,41 +293,43 @@ class WorkoutHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildFooter() {
-    return Padding(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Text(
-            'CO-PARTNERS',
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+  Widget _buildFooter(BoxConstraints constraints) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(constraints.maxWidth * 0.04),
+        child: Column(
+          children: [
+            Text(
+              'CO-PARTNERS',
+              style: TextStyle(
+                fontSize: constraints.maxWidth * 0.06,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-          ),
-          SizedBox(height: 16.0),
-          Wrap(
-            spacing: 42.0, // Space between logos
-            runSpacing: 8.0, // Space between rows if wrapped
-            alignment: WrapAlignment.center,
-            children: [
-              _buildPartnerLogo('assets/logo1.png'),
-              _buildPartnerLogo('assets/logo2.png'),
-              _buildPartnerLogo('assets/logo3.png'),
-              _buildPartnerLogo('assets/logo4.png'),
-              _buildPartnerLogo('assets/logo5.png'),
-            ],
-          ),
-        ],
+            SizedBox(height: constraints.maxHeight * 0.02),
+            Wrap(
+              spacing: constraints.maxWidth * 0.05,
+              runSpacing: constraints.maxHeight * 0.01,
+              alignment: WrapAlignment.center,
+              children: [
+                _buildPartnerLogo('assets/logo1.png', constraints),
+                _buildPartnerLogo('assets/logo2.png', constraints),
+                _buildPartnerLogo('assets/logo3.png', constraints),
+                _buildPartnerLogo('assets/logo4.png', constraints),
+                _buildPartnerLogo('assets/logo5.png', constraints),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildPartnerLogo(String imagePath) {
+  Widget _buildPartnerLogo(String imagePath, BoxConstraints constraints) {
     return Container(
-      width: 80.0, // Reduced size
-      height: 80.0, // Reduced size
+      width: constraints.maxWidth * 0.2,
+      height: constraints.maxWidth * 0.2,
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage(imagePath),

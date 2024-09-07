@@ -12,19 +12,17 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  late FixedExtentScrollController _controller= FixedExtentScrollController();
+  late FixedExtentScrollController _controller;
   int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    // Initialize the controller
     _controller = FixedExtentScrollController();
   }
 
   @override
   void dispose() {
-    // Dispose of the controller
     _controller.dispose();
     super.dispose();
   }
@@ -39,6 +37,7 @@ class _PaymentPageState extends State<PaymentPage> {
       curve: Curves.easeInOut,
     );
   }
+
   String get _textForIndex {
     switch (_selectedIndex) {
       case 0:
@@ -51,220 +50,47 @@ class _PaymentPageState extends State<PaymentPage> {
         return "";
     }
   }
+
   Widget _buildPaymentDetails() {
     switch (_selectedIndex) {
       case 0: // Card Payment
-        return SingleChildScrollView(
-
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 25),
-                child: SizedBox(
-                  width: 350,
-                  child: TextField(
-                    style: TextStyle(color: Colors.black, fontSize: 22),
-                    decoration: InputDecoration(
-                      hintText: "Card Holder Name",
-                      hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.4),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(25.0),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 25, top: 20),
-                child: SizedBox(
-                  width: 350,
-                  child: TextField(
-                    style: TextStyle(color: Colors.black, fontSize: 22),
-                    decoration: InputDecoration(
-                      hintText: "Card Number",
-                      hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.4),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(25.0),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 25, top: 20),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 230,
-                      child: TextField(
-                        style: TextStyle(color: Colors.black, fontSize: 22),
-                        decoration: InputDecoration(
-                          hintText: "Expiry Date",
-                          hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.4),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black),
-                            borderRadius: BorderRadius.circular(25.0),
-                          ),
-                        ),
-                      ),
-                    ),Padding(
-                      padding: const EdgeInsets.only(left:5),
-                      child: SizedBox(
-                        width: 150,
-                        child: TextField(
-                          style: TextStyle(color: Colors.black, fontSize: 22),
-                          decoration: InputDecoration(
-                            hintText: "CVV",
-                            hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
-                            filled: true,
-                            fillColor: Colors.white.withOpacity(0.4),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                              borderRadius: BorderRadius.circular(25.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 25,top: 17),
-                child: SizedBox(
-                  width:350,
-                  child: TextField(
-                    style: TextStyle(color: Colors.black,fontSize: 22),
-                    decoration: InputDecoration(
-                        hintText: "Card Number",
-                        hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.4),
-                        border:OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black),
-                            borderRadius: BorderRadius.circular(25.0)
-                        )
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-
-      case 1: // UPI Payment
-        return Padding(
-          padding: const EdgeInsets.only(left: 25, top: 100),
-          child: SizedBox(
-            width: 350,
-            child: TextField(
-              style: TextStyle(color: Colors.black, fontSize: 22),
-              decoration: InputDecoration(
-                hintText: "Enter UPI ID",
-                hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.4),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
-                  borderRadius: BorderRadius.circular(25.0),
-                ),
-              ),
-            ),
-          ),
-        );
-
-      case 2: // Net Banking
-      // Add fields for Net Banking if needed
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 25),
-              child: SizedBox(
-                width: 350,
-                child: TextField(
-                  style: TextStyle(color: Colors.black, fontSize: 22),
-                  decoration: InputDecoration(
-                    hintText: "Name",
-                    hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
-                    filled: true,
-                    fillColor: Colors.white.withOpacity(0.4),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                  ),
+            _buildTextField("Card Holder Name"),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+            _buildTextField("Card Number"),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: _buildTextField("Expiry Date"),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 25, top: 20),
-              child: SizedBox(
-                width: 350,
-                child: TextField(
-                  style: TextStyle(color: Colors.black, fontSize: 22),
-                  decoration: InputDecoration(
-                    hintText: "Account Number",
-                    hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
-                    filled: true,
-                    fillColor: Colors.white.withOpacity(0.4),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                  ),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.02),
+                Expanded(
+                  flex: 1,
+                  child: _buildTextField("CVV"),
                 ),
-              ),
+              ],
             ),
+          ],
+        );
 
-            Padding(
-              padding: const EdgeInsets.only(left: 25,top: 17),
-              child: SizedBox(
-                width:350,
-                child: TextField(
-                  style: TextStyle(color: Colors.black,fontSize: 22),
-                  decoration: InputDecoration(
-                      hintText: "Branch",
-                      hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.4),
-                      border:OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                          borderRadius: BorderRadius.circular(25.0)
-                      )
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 25,top: 17),
-              child: SizedBox(
-                width:350,
-                child: TextField(
-                  style: TextStyle(color: Colors.black,fontSize: 22),
-                  decoration: InputDecoration(
-                      hintText: "IFSC CODE",
-                      hintStyle: TextStyle(color: Colors.grey,fontSize: 20),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.4),
-                      border:OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                          borderRadius: BorderRadius.circular(25.0)
-                      )
-                  ),
-                ),
-              ),
-            ),
+      case 1: // UPI Payment
+        return _buildTextField("Enter UPI ID");
+
+      case 2: // Net Banking
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildTextField("Name"),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+            _buildTextField("Account Number"),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+            _buildTextField("Branch"),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+            _buildTextField("IFSC CODE"),
           ],
         );
 
@@ -272,6 +98,29 @@ class _PaymentPageState extends State<PaymentPage> {
         return Container();
     }
   }
+
+  Widget _buildTextField(String hintText) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.06),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.88,
+        child: TextField(
+          style: TextStyle(color: Colors.black, fontSize: MediaQuery.of(context).size.width * 0.05),
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: TextStyle(color: Colors.grey, fontSize: MediaQuery.of(context).size.width * 0.045),
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.4),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+              borderRadius: BorderRadius.circular(25.0),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -280,147 +129,125 @@ class _PaymentPageState extends State<PaymentPage> {
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: [
-
               Container(
-              height: double.infinity,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end:Alignment.bottomCenter,
-                  colors: [Color(0xffff22D6E0),Color(0xffff79BED6).withOpacity(0.4)]
-                )
-              ),
-            ),
-              Container(
-                margin: EdgeInsets.only(top: 180,left: 20),
-                height: 100,
-                width:double.infinity ,
-                color: Colors.transparent,
-                child: Text("Choose the Payment Method Below",style:TextStyle(color: Colors.black,fontSize: 20)),
+                height: double.infinity,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xffff22D6E0), Color(0xffff79BED6).withOpacity(0.4)]
+                    )
+                ),
               ),
               Positioned(
-                top: 240,
-                left: 20,
+                top: MediaQuery.of(context).size.height * 0.22,
+                left: MediaQuery.of(context).size.width * 0.05,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child: Text(
+                    "Choose the Payment Method Below",
+                    style: TextStyle(color: Colors.black, fontSize: MediaQuery.of(context).size.width * 0.05),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.3,
+                left: MediaQuery.of(context).size.width * 0.05,
                 child: Row(
-
                   children: [
-                    GestureDetector(
-                      onTap:()=> _scrollToIndex(0),
-                      child: Container(
-                          height: 100,
-                          width: 110,
-                          color: Colors.white.withOpacity(0.6),
-                          child: Image.asset('assets/cards.png',fit: BoxFit.contain,)
-                      ),
-                    ),
-
-                    GestureDetector(
-                      onTap:() => _scrollToIndex(1),
-                      child: Container(
-                          margin: EdgeInsets.only(left: 20),
-                          height: 100,
-                          width: 110,
-                          color: Colors.white.withOpacity(0.6),
-                          child: Image.asset('assets/image10.png',fit: BoxFit.contain,)
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap:() => _scrollToIndex(2),
-                      child: Container(
-                          margin: EdgeInsets.only(left: 20),
-                          height: 100,
-                          width: 120,
-                          color: Colors.white.withOpacity(0.6),
-                          child: Image.asset('assets/image11.png',fit: BoxFit.contain,)
-                      ),
-                    ),
+                    _buildPaymentOption('assets/cards.png', 0),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                    _buildPaymentOption('assets/image10.png', 1),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                    _buildPaymentOption('assets/image11.png', 2),
                   ],
                 ),
               ),
               Positioned(
-                top:10,
-                right: 20,
+                top: MediaQuery.of(context).size.height * 0.01,
+                right: MediaQuery.of(context).size.width * 0.05,
                 child: Container(
-                  height: 200,
-                  width: 150,
-                  child: ListWheelScrollView(itemExtent: 100,
+                  height: MediaQuery.of(context).size.height * 0.25,
+                  width: MediaQuery.of(context).size.width * 0.375,
+                  child: ListWheelScrollView(
+                      itemExtent: MediaQuery.of(context).size.height * 0.125,
                       controller: _controller,
                       squeeze: 0.6,
                       offAxisFraction: -3.5,
-                      children: [ClipRRect(
-                        borderRadius: BorderRadius.circular(60.0),
-                        child: Container(
-                            height: 100,
-                            width: 110,
-                            color: Colors.white.withOpacity(0.6),
-                            child: Image.asset('assets/card2.png',fit: BoxFit.contain,)
-                        ),
-                      ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(60.0),
-                          child: Container(
-                              height: 100,
-                              width: 120,
-
-                              color: Colors.white.withOpacity(0.6),
-                              child: Image.asset('assets/image10.png',fit: BoxFit.contain,)
-                          ),
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(60.0),
-                          child: Container(
-
-                              height: 100,
-                              width: 120,
-                              color: Colors.white.withOpacity(0.6),
-                              child: Image.asset('assets/image11.png',fit: BoxFit.contain,)
-                          ),
-                        ),
-
+                      children: [
+                        _buildWheelScrollItem('assets/card2.png'),
+                        _buildWheelScrollItem('assets/image10.png'),
+                        _buildWheelScrollItem('assets/image11.png'),
                       ]
                   ),
                 ),
               ),
-              AnimatedPositioned(
-                duration: Duration(milliseconds: 5000),
-                curve: Curves.easeInOut,
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.09,
+                left: MediaQuery.of(context).size.width * 0.05,
                 child: Container(
-                    margin: EdgeInsets.only(top: 70,left: 20),
-                    height: 100,
-                    width: 300,
-                    child: Text( _textForIndex,style: TextStyle(color: Colors.black,fontSize: 30),)),
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  child: Text(
+                    _textForIndex,
+                    style: TextStyle(color: Colors.black, fontSize: MediaQuery.of(context).size.width * 0.075),
+                  ),
+                ),
               ),
-              AnimatedPositioned(
-                duration: Duration(seconds: 2),
-                curve: Curves.fastOutSlowIn,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 380),
-                  child: Stack(
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.475,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
                     children: [
                       _buildPaymentDetails(),
-
-                      Padding(
-                        padding: const EdgeInsets.only(left:110,top:370),
-                        child: Container(
-                            width: 200,
-                            height: 60,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                color: Color(0xffff066589),
-                                borderRadius: BorderRadius.circular(25.0)
-                            ),
-                            child: TextButton(onPressed: (){}, child: Text("Pay",style: TextStyle(color: Colors.white,fontSize: 20),))
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        height: MediaQuery.of(context).size.height * 0.075,
+                        decoration: BoxDecoration(
+                            color: Color(0xffff066589),
+                            borderRadius: BorderRadius.circular(25.0)
+                        ),
+                        child: TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            "Pay",
+                            style: TextStyle(color: Colors.white, fontSize: MediaQuery.of(context).size.width * 0.05),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                )
+                ),
               ),
-
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentOption(String assetPath, int index) {
+    return GestureDetector(
+      onTap: () => _scrollToIndex(index),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.125,
+        width: MediaQuery.of(context).size.width * 0.275,
+        color: Colors.white.withOpacity(0.6),
+        child: Image.asset(assetPath, fit: BoxFit.contain),
+      ),
+    );
+  }
+
+  Widget _buildWheelScrollItem(String assetPath) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(60.0),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.125,
+        width: MediaQuery.of(context).size.width * 0.275,
+        color: Colors.white.withOpacity(0.6),
+        child: Image.asset(assetPath, fit: BoxFit.contain),
       ),
     );
   }
