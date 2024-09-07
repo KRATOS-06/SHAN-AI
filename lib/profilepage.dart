@@ -15,16 +15,30 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Container(
       color: Color(0xFF00B2B2),
-      /*decoration: BoxDecoration(
-          gradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          Color(0xffffF7FBFB), Color(0xffffbee2eb), Color(0xffffaedeeb)
-          // Colors.black54, Colors.red
-        ],
-      )),*/
       child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                size: 25,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              color: Colors.black,
+            ),
+            backgroundColor: Color(0xff00b2b2),
+            elevation: 0,
+            actions: [
+              Padding(
+                padding: EdgeInsets.only(right:10),
+                child: Image.asset(
+                  'assets/gym_logo.png',
+                  height: 50,
+                ),
+              ),
+            ],
+          ),
           backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
             child: Column(
@@ -32,19 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 Stack(children: [
                   Container(
-                    //padding: EdgeInsets.all(20),
-                    margin: EdgeInsets.only(top: 30),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Image.asset(
-                        'assets/gym_logo.png',
-                        height: 70.0,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 40, top: 50),
+                    margin: EdgeInsets.only(left: 40, top:10),
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
@@ -59,7 +61,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   Container(
-                      margin: EdgeInsets.only(left: 180, top: 80),
+                      margin: EdgeInsets.only(left: 180, top: 10),
                       width: 150,
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.deepOrange),
@@ -82,7 +84,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       padding: const EdgeInsets.only(left: 10.0),
                       child: CircleAvatar(
                         backgroundImage: AssetImage('assets/profile.png'),
-                        radius: 70,
+                        radius: 50,
                       ),
                     ),
                     Column(
@@ -127,16 +129,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Text("         This week"),
                 Container(
-                  margin: EdgeInsets.only(left: 10),
+                  margin: EdgeInsets.only(left: 10,right: 10),
                   height: 200,
-                  width: 390,
+                  width: 370,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                       color: Colors.grey,
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(40.0)),
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 45),
+                    padding: const EdgeInsets.only(left: 30),
                     child: Row(
                       children: [
                         Text.rich(
@@ -157,7 +159,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         Container(
                           height: 150,
-                          width: 250,
+                          width: 230,
                           child: BarChart(BarChartData(
                               borderData: FlBorderData(
                                   border: Border(

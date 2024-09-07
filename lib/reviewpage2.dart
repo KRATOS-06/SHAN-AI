@@ -34,6 +34,10 @@ class _ReviewPageState extends State<ReviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen width and height
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Color(0xFF00B2B2),
       body: SingleChildScrollView(
@@ -45,11 +49,11 @@ class _ReviewPageState extends State<ReviewPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  margin: EdgeInsets.only(left: 12),
+                  margin: EdgeInsets.only(left: screenWidth * 0.03),
                   child: IconButton(
                     icon: Icon(
                       Icons.arrow_back,
-                      size: 30,
+                      size: screenWidth * 0.08,
                     ),
                     onPressed: () {
                       Navigator.pop(context);
@@ -58,12 +62,12 @@ class _ReviewPageState extends State<ReviewPage> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.all(screenWidth * 0.05),
                   child: Align(
                     alignment: Alignment.topRight,
                     child: Image.asset(
                       'assets/gym_logo.png',
-                      height: 65.0,
+                      height: screenHeight * 0.1,
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -72,31 +76,32 @@ class _ReviewPageState extends State<ReviewPage> {
             ),
             // Title
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 34),
-              child: Text(
-                "Review",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 40,
-                  fontWeight: FontWeight.w100,
-                  fontFamily: 'DMSerifText',
+              padding: EdgeInsets.all(0),
+              child: Center(
+                child: Text(
+                  "Review",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: screenWidth * 0.1,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
             // Subtitle
             Padding(
-              padding: const EdgeInsets.only(left: 34, top: 20),
+              padding: EdgeInsets.only(left: screenWidth * 0.08, top: screenHeight * 0.02),
               child: Text(
                 "Add your Comments..",
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 26,
+                  fontSize: screenWidth * 0.06,
                 ),
               ),
             ),
             // Comment Input Field
             Padding(
-              padding: const EdgeInsets.all(28),
+              padding: EdgeInsets.all(screenWidth * 0.07),
               child: Column(
                 children: [
                   TextField(
@@ -105,33 +110,32 @@ class _ReviewPageState extends State<ReviewPage> {
                     expands: false,
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 22,
+                      fontSize: screenWidth * 0.055,
                     ),
                     decoration: InputDecoration(
                       hintText: "   Share a moment with us.....",
                       hintStyle: TextStyle(
                         color: Colors.grey,
-                        fontSize: 20,
+                        fontSize: screenWidth * 0.05,
                       ),
                       filled: true,
                       fillColor: Color(0xffffD9D9D9),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(25.0),
+                        borderRadius: BorderRadius.circular(screenWidth * 0.06),
                       ),
                     ),
                   ),
-                  SizedBox(height: 50),
+                  SizedBox(height: screenHeight * 0.05),
                   Image.asset(
                     'assets/image33.png',
-                    height: 80,
+                    height: screenHeight * 0.1,
                     width: double.infinity,
                     fit: BoxFit.contain,
                   ),
                 ],
               ),
             ),
-
             // Review List
             ListView.builder(
               itemCount: cimages.length,
@@ -139,41 +143,41 @@ class _ReviewPageState extends State<ReviewPage> {
               physics: NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 28.0, vertical: 10.0),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.07, vertical: screenHeight * 0.01),
                   child: Container(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(screenWidth * 0.05),
                     decoration: BoxDecoration(
                       color: Color(0xffffFFE7E7),
-                      borderRadius: BorderRadius.circular(30.0),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.08),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Image.asset(
                           cimages[index],
-                          height: 80,
+                          height: screenHeight * 0.12,
                           width: double.infinity,
                           fit: BoxFit.contain,
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: screenHeight * 0.02),
                         Text(
                           comments[index],
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: screenWidth * 0.04,
                             color: Colors.black,
                           ),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: screenHeight * 0.02),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: rowimages1.map((image) {
                             return Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.only(right: 5.0),
+                                padding: EdgeInsets.only(right: screenWidth * 0.01),
                                 child: Image.asset(
                                   image,
-                                  height: 40,
+                                  height: screenHeight * 0.05,
                                   fit: BoxFit.contain,
                                 ),
                               ),

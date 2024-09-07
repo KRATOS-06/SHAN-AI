@@ -13,41 +13,7 @@ class _ShopPageState extends State<ShopPage> {
     'Whey Protein': [
       {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
       {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
+      {'name': 'Quest Nutrition', 'price': 2399, 'image': 'assets/quest_nutrition.png'},
       {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
       {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
       {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
@@ -55,136 +21,23 @@ class _ShopPageState extends State<ShopPage> {
     'Vitamin': [
       {'name': 'Vitamin C', 'price': 999, 'image': 'assets/vitamin_c.png'},
       {'name': 'Vitamin D3', 'price': 799, 'image': 'assets/vitamin_d3.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
     ],
     'Gainers': [
       {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
       {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
     ],
     'Test Boosters': [
       {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
       {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {
-        'name': 'Quest Nutrition',
-        'price': 2399,
-        'image': 'assets/quest_nutrition.png'
-      },
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
     ]
-    // Add more categories with products as needed
   };
 
   @override
   Widget build(BuildContext context) {
+    // Obtain screen width and height
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -195,11 +48,11 @@ class _ShopPageState extends State<ShopPage> {
           title: Text('SHOPS'),
           actions: [
             Padding(
-              padding: const EdgeInsets.all(5.0),
+              padding: EdgeInsets.all(screenWidth * 0.013),
               child: Image.asset(
                 'assets/gym_logo.png',
-                width: 70.0,
-                height: 70.0,
+                width: screenWidth * 0.2,
+                height: screenHeight * 0.08,
                 fit: BoxFit.cover,
               ),
             ),
@@ -208,7 +61,7 @@ class _ShopPageState extends State<ShopPage> {
         backgroundColor: Color(0xFF00B2B2),
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(screenWidth * 0.04),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -220,32 +73,29 @@ class _ShopPageState extends State<ShopPage> {
                     prefixIcon: Icon(Icons.search),
                     hintText: 'Search',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(28.0),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.07),
                       borderSide: BorderSide.none,
                     ),
                   ),
                 ),
-                SizedBox(height: 16.0),
+                SizedBox(height: screenHeight * 0.02),
 
                 // Categories
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildCategoryButton(
-                          'Whey Protein', 'assets/whey_protein_icon.png'),
-                      SizedBox(width: 16.0),
-                      _buildCategoryButton(
-                          'Vitamin', 'assets/vitamin_icon.png'),
-                      SizedBox(width: 16.0),
-                      _buildCategoryButton('Gainers', 'assets/gainer_icon.png'),
-                      SizedBox(width: 16.0),
-                      _buildCategoryButton(
-                          'Test Boosters', 'assets/test_booster_icon.png'),
+                      _buildCategoryButton('Whey Protein', 'assets/whey_protein_icon.png', screenWidth, screenHeight),
+                      SizedBox(width: screenWidth * 0.04),
+                      _buildCategoryButton('Vitamin', 'assets/vitamin_icon.png', screenWidth, screenHeight),
+                      SizedBox(width: screenWidth * 0.04),
+                      _buildCategoryButton('Gainers', 'assets/gainer_icon.png', screenWidth, screenHeight),
+                      SizedBox(width: screenWidth * 0.04),
+                      _buildCategoryButton('Test Boosters', 'assets/test_booster_icon.png', screenWidth, screenHeight),
                     ],
                   ),
                 ),
-                SizedBox(height: 16.0),
+                SizedBox(height: screenHeight * 0.02),
 
                 // Category Title
                 Center(
@@ -253,7 +103,7 @@ class _ShopPageState extends State<ShopPage> {
                     selectedCategory,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 24.0,
+                      fontSize: screenWidth * 0.06,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -265,14 +115,13 @@ class _ShopPageState extends State<ShopPage> {
                   physics: NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 16.0,
-                    mainAxisSpacing: 40.0,
-                    childAspectRatio:
-                        0.8, // Adjust this ratio to match the image
+                    crossAxisSpacing: screenWidth * 0.04,
+                    mainAxisSpacing: screenHeight * 0.07,
+                    childAspectRatio: 0.8, // Adjust this ratio to match the image
                   ),
                   itemCount: productData[selectedCategory]!.length,
                   itemBuilder: (context, index) {
-                    return _buildProductCard(index);
+                    return _buildProductCard(index, screenWidth, screenHeight);
                   },
                 ),
               ],
@@ -283,7 +132,7 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _buildCategoryButton(String title, String iconPath) {
+  Widget _buildCategoryButton(String title, String iconPath, double screenWidth, double screenHeight) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -293,20 +142,21 @@ class _ShopPageState extends State<ShopPage> {
       child: Column(
         children: [
           CircleAvatar(
-            radius: 40,
+            radius: screenWidth * 0.1,
             backgroundColor: Colors.white,
             child: Image.asset(
               iconPath,
-              height: 40,
-              fit: BoxFit.fill,
+              height: screenHeight * 0.06,
+              fit: BoxFit.cover,
             ),
           ),
-          SizedBox(height: 8.0),
+          SizedBox(height: screenHeight * 0.01),
           Text(
             title,
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
+              fontSize: screenWidth * 0.037,
             ),
           ),
         ],
@@ -314,7 +164,7 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _buildProductCard(index) {
+  Widget _buildProductCard(int index, double screenWidth, double screenHeight) {
     var product = productData[selectedCategory]![index];
     return Center(
       child: Stack(
@@ -322,13 +172,13 @@ class _ShopPageState extends State<ShopPage> {
         children: [
           // First container with increased height by 10%
           Container(
-            width: 208,
-            height: 214, // Increased by 10%
+            width: screenWidth * 0.55,
+            height: screenHeight * 0.28, // Increased by 10%
             decoration: ShapeDecoration(
               color: Colors.white,
               shape: RoundedRectangleBorder(
                 side: BorderSide(width: 1, color: Color(0xFF9736C1)),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(screenWidth * 0.05),
               ),
               image: DecorationImage(
                 image: AssetImage(product['image']),
@@ -338,15 +188,15 @@ class _ShopPageState extends State<ShopPage> {
           ),
           // Second container positioned inside the bottom of the first container
           Positioned(
-            bottom: -35.5, // Half of the second container's height
+            bottom: -screenHeight * 0.05, // Adjust based on the screen height
             child: Container(
-              width: 182,
-              height: 87,
-              padding: EdgeInsets.all(8),
+              width: screenWidth * 0.44,
+              height: screenHeight * 0.11,
+              padding: EdgeInsets.all(screenWidth * 0.02),
               decoration: ShapeDecoration(
                 color: Color(0xFFD2FFE8),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.05),
                 ),
               ),
               child: Row(
@@ -362,17 +212,17 @@ class _ShopPageState extends State<ShopPage> {
                           '${product['name']}',
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 12,
+                            fontSize: screenWidth * 0.035,
                             fontFamily: 'Inria Sans',
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: screenHeight * 0.005),
                         Text(
                           '\$${product['price']}',
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 20,
+                            fontSize: screenWidth * 0.05,
                             fontFamily: 'Inria Sans',
                             fontWeight: FontWeight.w400,
                           ),
@@ -387,20 +237,20 @@ class _ShopPageState extends State<ShopPage> {
                       // Shopping cart icon
                       Icon(
                         Icons.shopping_cart,
-                        size: 30,
+                        size: screenWidth * 0.07,
                         color: Colors.black,
                       ),
-                      SizedBox(height: 8.0),
+                      SizedBox(height: screenHeight * 0.01),
                       // "BUY NOW" button
                       GestureDetector(
                         onTap: () {
                           // Handle buy now action here
                         },
                         child: Container(
-                          width: 80,
-                          height: 30,
+                          width: screenWidth * 0.15,
+                          height: screenHeight * 0.03,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(screenWidth * 0.03),
                             color: Colors.black,
                           ),
                           child: Center(
@@ -408,8 +258,8 @@ class _ShopPageState extends State<ShopPage> {
                               'BUY NOW',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
+                                fontSize: screenWidth * 0.025,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
