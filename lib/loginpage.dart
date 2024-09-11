@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:gym_management/homepage.dart';
 import 'package:gym_management/signinpage.dart';
 
@@ -13,6 +15,35 @@ class _LoginPageState extends State<LoginPage> {
 
   String _emailvalue = "";
   String _passwordvalue = "";
+
+  Future<void> _login() async {
+    final url = Uri.parse('https://gym-management-10.onrender.com/accounts/user_login');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'username': _emailvalue,
+        'password': _passwordvalue,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, the login was successful
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => WorkoutHomePage()),
+      );
+    } else {
+      // If the server returns a 400 response, the login failed
+      final errorMessage = json.decode(response.body)['message'];
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: $errorMessage')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,8 +116,6 @@ class _LoginPageState extends State<LoginPage> {
                           validator: (email) {
                             if (email == null || email.isEmpty) {
                               return "Please Enter Name";
-                            } else if (email != "gym") {
-                              return "Invalid Name";
                             }
                             return null;
                           },
@@ -115,8 +144,6 @@ class _LoginPageState extends State<LoginPage> {
                               return "Please Enter Valid Password";
                             } else if (password.length < 8 || password.length > 15) {
                               return "Password must be 8-15 characters long";
-                            } else if (password != "12345678") {
-                              return "Invalid Password";
                             }
                             return null;
                           },
@@ -183,15 +210,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: TextButton(
                       onPressed: () {
-                        if (formkey.currentState!.validate()) {
+                        if (formkey.currentState != null && formkey.currentState!.validate()) {
                           formkey.currentState!.save();
-
-                          if (_emailvalue == "gym" && _passwordvalue == "12345678") {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => WorkoutHomePage()),
-                            );
-                          }
+                          _login(); // Call the login function
                         }
                       },
                       child: Text(
@@ -207,7 +228,6 @@ class _LoginPageState extends State<LoginPage> {
                   right: screenSize.width * 0.02,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                     children: [
                       TextButton(
                         onPressed: () {},

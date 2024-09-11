@@ -116,7 +116,7 @@ packages:
     source: sdk
     version: "0.0.0"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010
@@ -175,10 +175,10 @@ packages:
     dependency: "direct main"
     description:
       name: lottie
-      sha256: "6a24ade5d3d918c306bb1c21a6b9a04aab0489d51a2582522eea820b4093b62b"
+      sha256: "1f0ce68112072d66ea271a9841994fa8d16442e23d8cf8996c9fa74174e58b4e"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.2"
+    version: "3.0.0"
   matcher:
     dependency: transitive
     description:
