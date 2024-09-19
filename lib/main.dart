@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:gym_management/adminsigninpage.dart';
 import 'package:gym_management/homepage.dart';
 import 'package:gym_management/onboardingpage.dart';
 import 'package:gym_management/splashscreen.dart';
 import 'package:gym_management/paymentpage.dart';
 import 'package:gym_management/profilepage.dart';
 import 'package:gym_management/reviewpage2.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool islogin = prefs.getBool('islogin') ?? false;
+  runApp(MyApp(islogin: islogin));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool islogin;
+
+  const MyApp({super.key, required this.islogin});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +28,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: OnboardingPage(),
+      home: islogin ? WorkoutHomePage() : OnboardingPage(),
       debugShowCheckedModeBanner: false,
     );
   }

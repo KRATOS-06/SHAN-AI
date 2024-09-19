@@ -6,8 +6,78 @@ import 'package:gym_management/shoppage.dart';
 import 'package:gym_management/membership.dart';
 import 'package:gym_management/contactuspage.dart';
 import 'package:gym_management/mentorpage.dart';
+import 'package:gym_management/loginpage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class WorkoutHomePage extends StatelessWidget {
+class Event {
+  final String name;
+  final String date;
+  final String timing;
+  final String location;
+  final String description;
+  final String guestName;
+  final String gymId;
+  final String adminId;
+
+  Event({
+    required this.name,
+    required this.date,
+    required this.timing,
+    required this.location,
+    required this.description,
+    required this.guestName,
+    required this.gymId,
+    required this.adminId,
+  });
+}
+
+
+Future<void> _logout(BuildContext context) async {
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Clear all relevant user data
+    await prefs.clear(); // Clears all stored data in SharedPreferences
+    print("User has been logged out");
+
+    // Navigate to LoginPage after clearing data
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+
+    // Optionally, show a confirmation message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Successfully logged out')),
+    );
+  } catch (error) {
+    // Handle any errors during logout
+    print('Error during logout: $error');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Logout failed. Please try again.')),
+    );
+  }
+}
+
+class WorkoutHomePage extends StatefulWidget {
+  @override
+  _WorkoutHomePageState createState() => _WorkoutHomePageState();
+}
+
+class _WorkoutHomePageState extends State<WorkoutHomePage> {
+  List<Event> events = [
+    Event(
+      name: "Yoga Workshop",
+      date: "2024-09-20",
+      timing: "10:00 AM - 12:00 PM",
+      location: "Main Gym Hall",
+      description: "Join us for a relaxing yoga session led by expert instructors.",
+      guestName: "Sarah Johnson",
+      gymId: "123e4567-e89b-12d3-a456-426614174000",
+      adminId: "98765432-e89b-12d3-a456-426614174000",
+    ),
+    // Add more events as needed
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,16 +133,7 @@ class WorkoutHomePage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: constraints.maxHeight * 0.02),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildResponsiveCircle('assets/circle1.png', constraints),
-                      SizedBox(width: constraints.maxWidth * 0.05),
-                      _buildResponsiveCircle('assets/circle2.png', constraints),
-                      SizedBox(width: constraints.maxWidth * 0.05),
-                      _buildResponsiveCircle('assets/circle3.png', constraints),
-                    ],
-                  ),
+                  _buildEventStories(constraints),
                   SizedBox(height: constraints.maxHeight * 0.02),
                   _buildWorkoutCard(
                       'Beginner Workout',
@@ -197,41 +258,88 @@ class WorkoutHomePage extends StatelessWidget {
             leading: Icon(Icons.login),
             title: Text('Logout'),
             onTap: () {
-              Navigator.pop(context);
+              _logout(context);
             },
           ),
         ],
       ),
     );
+
   }
 
-  Widget _buildResponsiveCircle(String image, BoxConstraints constraints) {
+  Widget _buildEventStories(BoxConstraints constraints) {
     return Container(
-      width: constraints.maxWidth * 0.25,
       height: constraints.maxWidth * 0.25,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: [Colors.purple, Colors.pink, Colors.orange, Colors.yellow],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: events.length + 1,  // +1 for the add button
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return _buildAddStoryButton(constraints);
+          } else {
+            return _buildStoryCircle(events[index - 1], constraints);
+          }
+        },
       ),
-      child: Center(
-        child: Container(
-          width: constraints.maxWidth * 0.2,
-          height: constraints.maxWidth * 0.2,
-          child: Image.asset(image),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.grey[300],
+    );
+  }
+
+  Widget _buildAddStoryButton(BoxConstraints constraints) {
+    return GestureDetector(
+      onTap: _addNewEvent,
+      child: Container(
+        width: constraints.maxWidth * 0.25,
+        height: constraints.maxWidth * 0.25,
+        margin: EdgeInsets.only(right: 10),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.grey[300],
+        ),
+        child: Icon(Icons.add, size: constraints.maxWidth * 0.1),
+      ),
+    );
+  }
+
+  Widget _buildStoryCircle(Event event, BoxConstraints constraints) {
+    return GestureDetector(
+      onTap: () => _showEventDetails(event),
+      child: Container(
+        width: constraints.maxWidth * 0.25,
+        height: constraints.maxWidth * 0.25,
+        margin: EdgeInsets.only(right: 10),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [Colors.purple, Colors.pink, Colors.orange, Colors.yellow],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: Container(
+            width: constraints.maxWidth * 0.22,
+            height: constraints.maxWidth * 0.22,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+            child: Center(
+              child: Text(
+                event.name.substring(0, 2).toUpperCase(),
+                style: TextStyle(
+                  fontSize: constraints.maxWidth * 0.06,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildWorkoutCard(String title, String description, String imageUrl, BoxConstraints constraints) {
+  Widget _buildWorkoutCard(String title, String description, String imageUrl,
+      BoxConstraints constraints) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -292,6 +400,30 @@ class WorkoutHomePage extends StatelessWidget {
       ),
     );
   }
+  void _addNewEvent() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddEventPage(
+          onEventAdded: (Event newEvent) {
+            setState(() {
+              events.add(newEvent);
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showEventDetails(Event event) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventDetailsPage(event: event),
+      ),
+    );
+  }
+}
 
   Widget _buildFooter(BoxConstraints constraints) {
     return Center(
@@ -334,6 +466,190 @@ class WorkoutHomePage extends StatelessWidget {
         image: DecorationImage(
           image: AssetImage(imagePath),
           fit: BoxFit.contain,
+        ),
+      ),
+    );
+
+
+}
+
+
+
+class AddEventPage extends StatefulWidget {
+  final Function(Event) onEventAdded;
+
+  AddEventPage({required this.onEventAdded});
+
+  @override
+  _AddEventPageState createState() => _AddEventPageState();
+}
+
+class _AddEventPageState extends State<AddEventPage> {
+  final _formKey = GlobalKey<FormState>();
+  String name = '';
+  String date = '';
+  String timing = '';
+  String location = '';
+  String description = '';
+  String guestName = '';
+  String gymId = '';
+  String adminId = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add New Event'),
+        backgroundColor: Color(0xFF00B2B2),
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Event Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter event name';
+                  }
+                  return null;
+                },
+                onSaved: (value) => name = value!,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter date';
+                  }
+                  return null;
+                },
+                onSaved: (value) => date = value!,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Timing'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter timing';
+                  }
+                  return null;
+                },
+                onSaved: (value) => timing = value!,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Location'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter location';
+                  }
+                  return null;
+                },
+                onSaved: (value) => location = value!,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Description'),
+                maxLines: 3,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter description';
+                  }
+                  return null;
+                },
+                onSaved: (value) => description = value!,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Guest Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter guest name';
+                  }
+                  return null;
+                },
+                onSaved: (value) => guestName = value!,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Gym ID'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter gym ID';
+                  }
+                  return null;
+                },
+                onSaved: (value) => gymId = value!,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Admin ID'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter admin ID';
+                  }
+                  return null;
+                },
+                onSaved: (value) => adminId = value!,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                child: Text('Add Event'),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    final newEvent = Event(
+                      name: name,
+                      date: date,
+                      timing: timing,
+                      location: location,
+                      description: description,
+                      guestName: guestName,
+                      gymId: gymId,
+                      adminId: adminId,
+                    );
+                    widget.onEventAdded(newEvent);
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EventDetailsPage extends StatelessWidget {
+  final Event event;
+
+  EventDetailsPage({required this.event});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(event.name),
+        backgroundColor: Color(0xFF00B2B2),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Date: ${event.date}', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 8),
+            Text('Time: ${event.timing}', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 8),
+            Text('Location: ${event.location}', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 16),
+            Text('Description:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(event.description, style: TextStyle(fontSize: 16)),
+            SizedBox(height: 16),
+            Text('Guest: ${event.guestName}', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 8),
+            Text('Gym ID: ${event.gymId}', style: TextStyle(fontSize: 14, color: Colors.grey)),
+            Text('Admin ID: ${event.adminId}', style: TextStyle(fontSize: 14, color: Colors.grey)),
+          ],
         ),
       ),
     );
