@@ -4,27 +4,32 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:gym_management/homepage.dart';
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+class AdminSignInPage extends StatefulWidget {
+  final String userid;
+
+  const AdminSignInPage({super.key, required this.userid});
 
   @override
-  State<SignInPage> createState() => _SignInPageState();
+  State<AdminSignInPage> createState() => _AdminSignInPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _AdminSignInPageState extends State<AdminSignInPage> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers to capture form input values
-  final _userNameController = TextEditingController();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _mobileController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _zipCodeController = TextEditingController();
-  final _countryController = TextEditingController();
+  final TextEditingController _userNameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _zipCodeController = TextEditingController();
+  final TextEditingController _countryController = TextEditingController();
+  final TextEditingController _gymNameController = TextEditingController();
+  final TextEditingController _gymAddressController = TextEditingController();
+  final TextEditingController _gymPhoneController = TextEditingController();
 
   // Validators for each field
   String? _validateFirstName(String? value) {
@@ -108,6 +113,31 @@ class _SignInPageState extends State<SignInPage> {
     return null;
   }
 
+  String? _validateGymName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter the gym name';
+    }
+    return null;
+  }
+
+  String? _validateGymAddress(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter the gym address';
+    }
+    return null;
+  }
+
+  String? _validateGymPhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter the gym phone number';
+    }
+    final phoneRegex = RegExp(r'^\d{10}$'); // Assuming 10-digit phone number
+    if (!phoneRegex.hasMatch(value)) {
+      return 'Enter a valid 10-digit phone number';
+    }
+    return null;
+  }
+
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       print("hello");
@@ -115,11 +145,12 @@ class _SignInPageState extends State<SignInPage> {
         // Prepare the POST request data
         final response = await http.post(
           Uri.parse(
-              'https://gym-management-2.onrender.com/accounts/user_register'),
+              'https://gym-management-2.onrender.com/accounts/admin_register'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },
           body: jsonEncode(<String, String>{
+            'id': widget.userid,
             'username': _userNameController.text,
             'first_name': _firstNameController.text,
             'last_name': _lastNameController.text,
@@ -127,10 +158,13 @@ class _SignInPageState extends State<SignInPage> {
             'phone_number': _mobileController.text,
             'password1': _passwordController.text,
             'password2': _passwordController.text,
+            'city': _cityController.text,
             'country': _countryController.text,
+            'gym_name': _gymNameController.text,
+            'gym_address': _gymAddressController.text,
+            'gym_phone_number': _gymPhoneController.text,
           }),
         );
-        print(response.body);
         print(response.statusCode);
         if (response.statusCode == 201) {
           // If the server returns a successful response
@@ -161,7 +195,6 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   void dispose() {
-    _userNameController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
@@ -171,6 +204,9 @@ class _SignInPageState extends State<SignInPage> {
     _cityController.dispose();
     _zipCodeController.dispose();
     _countryController.dispose();
+    _gymNameController.dispose();
+    _gymAddressController.dispose();
+    _gymPhoneController.dispose();
     super.dispose();
   }
 
@@ -185,8 +221,8 @@ class _SignInPageState extends State<SignInPage> {
           width: double.infinity,
           child: Column(
             children: [
+              // Gradient Overlay
               Container(
-                // height: double.infinity,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -411,6 +447,91 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                         ),
                         SizedBox(height: screenHeight * 0.02),
+                        // Gym Name
+                        TextFormField(
+                          controller: _gymNameController,
+                          validator: _validateGymName,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: screenWidth * 0.05,
+                          ),
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.map,
+                              size: screenWidth * 0.08,
+                            ),
+                            hintText: "Gym Name",
+                            hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: screenWidth * 0.045,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.4),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                              borderRadius:
+                              BorderRadius.circular(screenWidth * 0.06),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        // Gym Address
+                        TextFormField(
+                          controller: _gymAddressController,
+                          validator: _validateGymAddress,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: screenWidth * 0.05,
+                          ),
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.map,
+                              size: screenWidth * 0.08,
+                            ),
+                            hintText: "Gym Address",
+                            hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: screenWidth * 0.045,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.4),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                              borderRadius:
+                              BorderRadius.circular(screenWidth * 0.06),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        // Gym Phone Number
+                        TextFormField(
+                          controller: _gymPhoneController,
+                          validator: _validateGymPhone,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: screenWidth * 0.05,
+                          ),
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.map,
+                              size: screenWidth * 0.08,
+                            ),
+                            hintText: "Gym Phone Number",
+                            hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: screenWidth * 0.045,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.4),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                              borderRadius:
+                              BorderRadius.circular(screenWidth * 0.06),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        // City and Zip Code
                         Row(
                           children: [
                             Expanded(
@@ -503,6 +624,7 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                         ),
                         SizedBox(height: screenHeight * 0.02),
+                        // Sign Up Button
                         Container(
                           width: double.infinity,
                           height: screenHeight * 0.08,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ShopPage extends StatefulWidget {
   @override
@@ -7,173 +9,245 @@ class ShopPage extends StatefulWidget {
 
 class _ShopPageState extends State<ShopPage> {
   String selectedCategory = 'Whey Protein';
-
-  // Dummy data for products categorized by type
-  Map<String, List<Map<String, dynamic>>> productData = {
-    'Whey Protein': [
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-      {'name': 'Quest Nutrition', 'price': 2399, 'image': 'assets/quest_nutrition.png'},
-      {'name': 'PEScience', 'price': 2949, 'image': 'assets/pescience.png'},
-      {'name': 'Isopure', 'price': 1999, 'image': 'assets/cellucor.png'},
-      {'name': 'ProSupps', 'price': 2799, 'image': 'assets/prosupps.png'},
-    ],
-    'Vitamin': [
-      {'name': 'Vitamin C', 'price': 999, 'image': 'assets/vitamin_c.png'},
-      {'name': 'Vitamin D3', 'price': 799, 'image': 'assets/vitamin_d3.png'},
-    ],
-    'Gainers': [
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-    ],
-    'Test Boosters': [
-      {'name': 'Dymatize', 'price': 2999, 'image': 'assets/dymatize.png'},
-      {'name': 'Cellucor', 'price': 2100, 'image': 'assets/cellucor.png'},
-    ]
-  };
+  List<dynamic> products = [];
+  List<dynamic> filteredProducts = [];
+  bool isLoading = true; // Loading indicator
+  TextEditingController searchController = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
-    // Obtain screen width and height
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+  void initState() {
+    super.initState();
+    fetchProducts();
+  }
 
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF00B2B2),
-          title: Text('SHOPS'),
-          actions: [
-            Padding(
-              padding: EdgeInsets.all(screenWidth * 0.013),
-              child: Image.asset(
-                'assets/gym_logo.png',
-                width: screenWidth * 0.2,
-                height: screenHeight * 0.08,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Color(0xFF00B2B2),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(screenWidth * 0.04),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Search Bar
-                TextField(
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Color(0x96D9D9D9),
-                    prefixIcon: Icon(Icons.search),
-                    hintText: 'Search',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(screenWidth * 0.07),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                SizedBox(height: screenHeight * 0.02),
+  // Fetch data from API with error handling and timeout
+  Future<void> fetchProducts() async {
+    try {
+      var url = 'https://gym-management-2.onrender.com/products/';
+      var response =
+      await http.get(Uri.parse(url)).timeout(Duration(seconds: 10));
 
-                // Categories
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildCategoryButton('Whey Protein', 'assets/whey_protein_icon.png', screenWidth, screenHeight),
-                      SizedBox(width: screenWidth * 0.04),
-                      _buildCategoryButton('Vitamin', 'assets/vitamin_icon.png', screenWidth, screenHeight),
-                      SizedBox(width: screenWidth * 0.04),
-                      _buildCategoryButton('Gainers', 'assets/gainer_icon.png', screenWidth, screenHeight),
-                      SizedBox(width: screenWidth * 0.04),
-                      _buildCategoryButton('Test Boosters', 'assets/test_booster_icon.png', screenWidth, screenHeight),
-                    ],
-                  ),
-                ),
-                SizedBox(height: screenHeight * 0.02),
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        setState(() {
+          products = data;
+          filteredProducts = products; // Initialize filteredProducts with all products
+          isLoading = false; // Data fetched, hide the loading indicator
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        _showErrorMessage('Failed to load products: ${response.statusCode}');
+      }
+    } on http.ClientException catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      _showErrorMessage('Client error: $e');
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      _showErrorMessage('Error: $e');
+    }
+  }
 
-                // Category Title
-                Center(
-                  child: Text(
-                    selectedCategory,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: screenWidth * 0.06,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-
-                // Product Grid
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: screenWidth * 0.04,
-                    mainAxisSpacing: screenHeight * 0.07,
-                    childAspectRatio: 0.8, // Adjust this ratio to match the image
-                  ),
-                  itemCount: productData[selectedCategory]!.length,
-                  itemBuilder: (context, index) {
-                    return _buildProductCard(index, screenWidth, screenHeight);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+  // Show error message
+  void _showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 
-  Widget _buildCategoryButton(String title, String iconPath, double screenWidth, double screenHeight) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedCategory = title;
-        });
-      },
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: screenWidth * 0.1,
-            backgroundColor: Colors.white,
+  // Filter products based on the search query
+  void filterProducts(String query) {
+    List<dynamic> filtered = products.where((product) {
+      final productName = product['name'].toLowerCase();
+      final input = query.toLowerCase();
+      return productName.contains(input);
+    }).toList();
+
+    setState(() {
+      filteredProducts = filtered;
+    });
+  }
+
+  // Create a new product
+  Future<void> createProduct(String name, String price, String desc,
+      String image, int stock, String reviews) async {
+    try {
+      var url = 'https://gym-management-2.onrender.com/products/';
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          'name': name,
+          'price': price,
+          'desc': desc,
+          'image': image,
+          'stock': stock,
+          'reviews': reviews,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        fetchProducts(); // Fetch updated products list
+      } else {
+        _showErrorMessage('Failed to create product: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showErrorMessage('Error: $e');
+    }
+  }
+
+  // Delete a product
+  Future<void> deleteProduct(String productId) async {
+    try {
+      var url = 'https://gym-management-2.onrender.com/products/$productId';
+      var response = await http.delete(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        fetchProducts(); // Fetch updated products list
+      } else {
+        _showErrorMessage('Failed to delete product: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showErrorMessage('Error: $e');
+    }
+  }
+
+  // Update a product
+  Future<void> updateProduct(String productId, String name, String price,
+      String desc, String image, int stock, String reviews) async {
+    try {
+      var url = 'https://gym-management-2.onrender.com/products/$productId';
+      var response = await http.put(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          'name': name,
+          'price': price,
+          'desc': desc,
+          'image': image,
+          'stock': stock,
+          'reviews': reviews,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        fetchProducts(); // Fetch updated products list
+      } else {
+        _showErrorMessage('Failed to update product: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showErrorMessage('Error: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFF00B2B2),
+        title: Text('SHOPS'),
+        actions: [
+          Padding(
+            padding: EdgeInsets.all(screenWidth * 0.013),
             child: Image.asset(
-              iconPath,
-              height: screenHeight * 0.06,
+              'assets/gym_logo.png',
+              width: screenWidth * 0.2,
+              height: screenHeight * 0.08,
               fit: BoxFit.cover,
-            ),
-          ),
-          SizedBox(height: screenHeight * 0.01),
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: screenWidth * 0.037,
             ),
           ),
         ],
       ),
+      backgroundColor: Color(0xFF00B2B2),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())// Show message if no products
+          : Padding(
+        padding: EdgeInsets.all(screenWidth * 0.04),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Search Bar
+            TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Color(0x96D9D9D9),
+                prefixIcon: Icon(Icons.search),
+                hintText: 'Search',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(screenWidth * 0.07),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              onChanged: filterProducts, // Filter products as user types
+            ),
+            SizedBox(height: screenHeight * 0.02), // Add some space below the search bar
+
+            // Create Button
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreateProductPage(
+                      onCreate: (name, price, desc, image, stock, reviews) {
+                        createProduct(name, price, desc, image, stock, reviews);
+                      },
+                    ),
+                  ),
+                );
+              },
+              child: Text('Create New Product'),
+            ),
+
+            // Product Grid
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: screenWidth * 0.04,
+                  mainAxisSpacing: screenHeight * 0.07,
+                  childAspectRatio: 0.8,
+                ),
+                itemCount: filteredProducts.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductDetailPage(product: filteredProducts[index]),
+                        ),
+                      );
+                    },
+                    child: _buildProductCard(filteredProducts[index], screenWidth, screenHeight),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildProductCard(int index, double screenWidth, double screenHeight) {
-    var product = productData[selectedCategory]![index];
+  Widget _buildProductCard(
+      Map<String, dynamic> product, double screenWidth, double screenHeight) {
     return Center(
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // First container with increased height by 10%
           Container(
             width: screenWidth * 0.55,
-            height: screenHeight * 0.28, // Increased by 10%
+            height: screenHeight * 0.28,
             decoration: ShapeDecoration(
               color: Colors.white,
               shape: RoundedRectangleBorder(
@@ -181,14 +255,13 @@ class _ShopPageState extends State<ShopPage> {
                 borderRadius: BorderRadius.circular(screenWidth * 0.05),
               ),
               image: DecorationImage(
-                image: AssetImage(product['image']),
+                image: NetworkImage(product['image']), // Use NetworkImage for images from API
                 fit: BoxFit.contain,
               ),
             ),
           ),
-          // Second container positioned inside the bottom of the first container
           Positioned(
-            bottom: -screenHeight * 0.05, // Adjust based on the screen height
+            bottom: -screenHeight * 0.05,
             child: Container(
               width: screenWidth * 0.44,
               height: screenHeight * 0.11,
@@ -200,78 +273,157 @@ class _ShopPageState extends State<ShopPage> {
                 ),
               ),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Column for the price and product name
                   Expanded(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${product['name']}',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: screenWidth * 0.035,
-                            fontFamily: 'Inria Sans',
-                            fontWeight: FontWeight.w400,
-                          ),
+                          product['name'],
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: screenHeight * 0.005),
                         Text(
                           '\$${product['price']}',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: screenWidth * 0.05,
-                            fontFamily: 'Inria Sans',
-                            fontWeight: FontWeight.w400,
-                          ),
+                          style: TextStyle(fontSize: 12),
                         ),
                       ],
                     ),
                   ),
-                  // Add the shopping cart icon and "BUY NOW" button
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Shopping cart icon
-                      Icon(
-                        Icons.shopping_cart,
-                        size: screenWidth * 0.07,
-                        color: Colors.black,
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      // "BUY NOW" button
-                      GestureDetector(
-                        onTap: () {
-                          // Handle buy now action here
-                        },
-                        child: Container(
-                          width: screenWidth * 0.15,
-                          height: screenHeight * 0.03,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                            color: Colors.black,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'BUY NOW',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: screenWidth * 0.025,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      deleteProduct(product['_id']);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      updateProduct(
+                        product['_id'],
+                        'Updated Name',
+                        '34.99',
+                        'Updated description',
+                        product['image'],
+                        product['stock'],
+                        product['reviews'],
+                      );
+                    },
                   ),
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// CreateProductPage to input product details
+class CreateProductPage extends StatelessWidget {
+  final Function(String, String, String, String, int, String) onCreate;
+
+  CreateProductPage({required this.onCreate});
+
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+  final TextEditingController descController = TextEditingController();
+  final TextEditingController imageController = TextEditingController();
+  final TextEditingController stockController = TextEditingController();
+  final TextEditingController reviewsController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Create New Product'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(labelText: 'Product Name'),
+            ),
+            TextField(
+              controller: priceController,
+              decoration: InputDecoration(labelText: 'Price'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: descController,
+              decoration: InputDecoration(labelText: 'Description'),
+            ),
+            TextField(
+              controller: imageController,
+              decoration: InputDecoration(labelText: 'Image URL'),
+            ),
+            TextField(
+              controller: stockController,
+              decoration: InputDecoration(labelText: 'Stock Quantity'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: reviewsController,
+              decoration: InputDecoration(labelText: 'Reviews'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                onCreate(
+                  nameController.text,
+                  priceController.text,
+                  descController.text,
+                  imageController.text,
+                  int.parse(stockController.text),
+                  reviewsController.text,
+                );
+                Navigator.pop(context); // Close the form after submission
+              },
+              child: Text('Create Product'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Product Detail Page
+class ProductDetailPage extends StatelessWidget {
+  final Map<String, dynamic> product;
+
+  ProductDetailPage({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(product['name']),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(product['image']),
+            SizedBox(height: 16.0),
+            Text(
+              product['desc'],
+              style: TextStyle(fontSize: 18.0),
+            ),
+            SizedBox(height: 16.0),
+            Text(
+              '\$${product['price']}',
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16.0),
+            Text('Stock: ${product['stock']}'),
+            SizedBox(height: 16.0),
+            Text('Reviews: ${product['reviews']}'),
+          ],
+        ),
       ),
     );
   }
