@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ContactUsForm extends StatefulWidget {
+  const ContactUsForm({super.key});
+
   @override
   _ContactUsFormState createState() => _ContactUsFormState();
 }
@@ -70,15 +72,15 @@ class _ContactUsFormState extends State<ContactUsForm> {
           },
           color: Colors.black,
         ),
-        backgroundColor: Color(0xff00b2b2),
+        backgroundColor: const Color(0xff00b2b2),
         elevation: 0,
       ),
-      backgroundColor: Color(0xff00b2b2),
+      backgroundColor: const Color(0xff00b2b2),
       body: SingleChildScrollView(
         child: Container(
           width: double.infinity,
           padding: EdgeInsets.all(screenWidth * 0.05),
-          color: Color(0xff00b2b2),
+          color: const Color(0xff00b2b2),
           child: Form(
             key: _formKey,
             child: Column(
@@ -105,7 +107,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xffff066589),
+                    backgroundColor: const Color(0xffff066589),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(screenWidth * 0.05),
                     ),
@@ -152,7 +154,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
                 vertical: screenHeight * 0.015,
                 horizontal: screenWidth * 0.04),
             filled: true,
-            fillColor: Color(0xFFD5EFFF),
+            fillColor: const Color(0xFFD5EFFF),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(screenWidth * 0.025),
               borderSide: BorderSide.none,

@@ -45,8 +45,8 @@ class _SplashScreenState extends State<SplashScreen>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  const Color(0xffff22D6E0),
-                  const Color(0xffff79BED6).withOpacity(0.4),
+                  const Color(0xffff22d6e0),
+                  const Color(0xffff79bed6).withOpacity(0.4),
                 ],
               ),
             ),
@@ -55,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen>
             top: screenHeight * 0.25,
             left: screenWidth * 0.05,
             right: screenWidth * 0.05,
-            child: Container(
+            child: SizedBox(
               width: screenWidth * 0.9,
               height: screenHeight * 0.5,
               child: Image.asset('assets/splash3.png', fit: BoxFit.contain),

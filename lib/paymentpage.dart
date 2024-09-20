@@ -33,7 +33,7 @@ class _PaymentPageState extends State<PaymentPage> {
     });
     _controller.animateToItem(
       index,
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
   }
@@ -112,7 +112,7 @@ class _PaymentPageState extends State<PaymentPage> {
             filled: true,
             fillColor: Colors.white.withOpacity(0.4),
             border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black),
+              borderSide: const BorderSide(color: Colors.black),
               borderRadius: BorderRadius.circular(25.0),
             ),
           ),
@@ -125,7 +125,7 @@ class _PaymentPageState extends State<PaymentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: [
@@ -136,7 +136,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Color(0xffff22D6E0), Color(0xffff79BED6).withOpacity(0.4)]
+                        colors: [const Color(0xffff22d6e0), const Color(0xffff79bed6).withOpacity(0.4)]
                     )
                 ),
               ),
@@ -167,7 +167,7 @@ class _PaymentPageState extends State<PaymentPage> {
               Positioned(
                 top: MediaQuery.of(context).size.height * 0.01,
                 right: MediaQuery.of(context).size.width * 0.05,
-                child: Container(
+                child: SizedBox(
                   height: MediaQuery.of(context).size.height * 0.25,
                   width: MediaQuery.of(context).size.width * 0.375,
                   child: ListWheelScrollView(
@@ -186,7 +186,7 @@ class _PaymentPageState extends State<PaymentPage> {
               Positioned(
                 top: MediaQuery.of(context).size.height * 0.09,
                 left: MediaQuery.of(context).size.width * 0.05,
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.75,
                   child: Text(
                     _textForIndex,
@@ -196,7 +196,7 @@ class _PaymentPageState extends State<PaymentPage> {
               ),
               Positioned(
                 top: MediaQuery.of(context).size.height * 0.475,
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Column(
                     children: [
@@ -206,7 +206,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         width: MediaQuery.of(context).size.width * 0.5,
                         height: MediaQuery.of(context).size.height * 0.075,
                         decoration: BoxDecoration(
-                            color: Color(0xffff066589),
+                            color: const Color(0xffff066589),
                             borderRadius: BorderRadius.circular(25.0)
                         ),
                         child: TextButton(

@@ -70,18 +70,20 @@ Future<void> _logout(BuildContext context) async {
 
     // Show a confirmation message
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Successfully logged out')),
+      const SnackBar(content: Text('Successfully logged out')),
     );
   } catch (error) {
     // Handle any errors during logout
     print('Error during logout: $error');
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Logout failed. Please try again.')),
+      const SnackBar(content: Text('Logout failed. Please try again.')),
     );
   }
 }
 
 class WorkoutHomePage extends StatefulWidget {
+  const WorkoutHomePage({super.key});
+
   @override
   _WorkoutHomePageState createState() => _WorkoutHomePageState();
 }
@@ -116,7 +118,7 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF00B2B2),
+        backgroundColor: const Color(0xFF00B2B2),
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
@@ -135,13 +137,13 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
           ),
         ),
       ),
-      backgroundColor: Color(0xFF00B2B2),
+      backgroundColor: const Color(0xFF00B2B2),
       drawer: _buildDrawer(context),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -209,20 +211,20 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Color(0xFF00B2B2),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Menu',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                   ),
                 ),
-                SizedBox(height: 0.0),
+                const SizedBox(height: 0.0),
                 Image.asset(
                   'assets/gym_logo.png',
                   height: 150.0,
@@ -232,16 +234,16 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           if (true) ...[
             ListTile(
-              leading: Icon(Icons.fitness_center),
-              title: Text('Plan'),
+              leading: const Icon(Icons.fitness_center),
+              title: const Text('Plan'),
               onTap: () {
                 Navigator.push(
                     context,
@@ -250,16 +252,16 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.people),
-              title: Text('Mentors'),
+              leading: const Icon(Icons.people),
+              title: const Text('Mentors'),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => MentorsPage()));
               },
             ),
             ListTile(
-              leading: Icon(Icons.shop),
-              title: Text('Shop'),
+              leading: const Icon(Icons.shop),
+              title: const Text('Shop'),
               onTap: () {
                 Navigator.push(
                     context, MaterialPageRoute(builder: (context) => ShopPage()));
@@ -268,40 +270,40 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
           ],
           if (userRole == 'admin' || userRole == 'mentor') ...[
             ListTile(
-              leading: Icon(Icons.event),
-              title: Text('Manage Events'),
+              leading: const Icon(Icons.event),
+              title: const Text('Manage Events'),
               onTap: () {
                 _addNewEvent();
               },
             ),
           ],
           ListTile(
-            leading: Icon(Icons.rate_review),
-            title: Text('Reviews'),
+            leading: const Icon(Icons.rate_review),
+            title: const Text('Reviews'),
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ReviewPage()));
+                  MaterialPageRoute(builder: (context) => const ReviewPage()));
             },
           ),
           ListTile(
-            leading: Icon(Icons.contact_mail),
-            title: Text('Contact Us'),
+            leading: const Icon(Icons.contact_mail),
+            title: const Text('Contact Us'),
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ContactUsForm()));
             },
           ),
           ListTile(
-            leading: Icon(Icons.person),
-            title: Text('Profile'),
+            leading: const Icon(Icons.person),
+            title: const Text('Profile'),
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()));
+                  MaterialPageRoute(builder: (context) => const ProfilePage()));
             },
           ),
           ListTile(
-            leading: Icon(Icons.login),
-            title: Text('Logout'),
+            leading: const Icon(Icons.login),
+            title: const Text('Logout'),
             onTap: () {
               _logout(context);
             },
@@ -312,7 +314,7 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
   }
 
   Widget _buildEventStories(BoxConstraints constraints) {
-    return Container(
+    return SizedBox(
       height: constraints.maxWidth * 0.25,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -334,7 +336,7 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
       child: Container(
         width: constraints.maxWidth * 0.25,
         height: constraints.maxWidth * 0.25,
-        margin: EdgeInsets.only(right: 10),
+        margin: const EdgeInsets.only(right: 10),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.grey[300],
@@ -350,8 +352,8 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
       child: Container(
         width: constraints.maxWidth * 0.25,
         height: constraints.maxWidth * 0.25,
-        margin: EdgeInsets.only(right: 10),
-        decoration: BoxDecoration(
+        margin: const EdgeInsets.only(right: 10),
+        decoration: const BoxDecoration(
           shape: BoxShape.circle,
           gradient: LinearGradient(
             colors: [Colors.purple, Colors.pink, Colors.orange, Colors.yellow],
@@ -363,7 +365,7 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
           child: Container(
             width: constraints.maxWidth * 0.22,
             height: constraints.maxWidth * 0.22,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.white,
             ),
@@ -423,7 +425,7 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
                       horizontal: constraints.maxWidth * 0.05,
                     ),
                   ),
-                  child: Text('Join us'),
+                  child: const Text('Join us'),
                 ),
               ],
             ),
@@ -460,7 +462,7 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('You do not have permission to add events.')),
+        const SnackBar(content: Text('You do not have permission to add events.')),
       );
     }
   }
@@ -528,7 +530,7 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
 class AddEventPage extends StatefulWidget {
   final Function(Event) onEventAdded;
 
-  AddEventPage({required this.onEventAdded});
+  const AddEventPage({super.key, required this.onEventAdded});
 
   @override
   _AddEventPageState createState() => _AddEventPageState();
@@ -549,18 +551,18 @@ class _AddEventPageState extends State<AddEventPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Event'),
-        backgroundColor: Color(0xFF00B2B2),
+        title: const Text('Add New Event'),
+        backgroundColor: const Color(0xFF00B2B2),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                decoration: InputDecoration(labelText: 'Event Name'),
+                decoration: const InputDecoration(labelText: 'Event Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter event name';
@@ -570,7 +572,7 @@ class _AddEventPageState extends State<AddEventPage> {
                 onSaved: (value) => name = value!,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
+                decoration: const InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter date';
@@ -580,7 +582,7 @@ class _AddEventPageState extends State<AddEventPage> {
                 onSaved: (value) => date = value!,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Timing'),
+                decoration: const InputDecoration(labelText: 'Timing'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter timing';
@@ -590,7 +592,7 @@ class _AddEventPageState extends State<AddEventPage> {
                 onSaved: (value) => timing = value!,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Location'),
+                decoration: const InputDecoration(labelText: 'Location'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter location';
@@ -600,7 +602,7 @@ class _AddEventPageState extends State<AddEventPage> {
                 onSaved: (value) => location = value!,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 maxLines: 3,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -611,7 +613,7 @@ class _AddEventPageState extends State<AddEventPage> {
                 onSaved: (value) => description = value!,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Guest Name'),
+                decoration: const InputDecoration(labelText: 'Guest Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter guest name';
@@ -621,7 +623,7 @@ class _AddEventPageState extends State<AddEventPage> {
                 onSaved: (value) => guestName = value!,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Gym ID'),
+                decoration: const InputDecoration(labelText: 'Gym ID'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter gym ID';
@@ -631,7 +633,7 @@ class _AddEventPageState extends State<AddEventPage> {
                 onSaved: (value) => gymId = value!,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Admin ID'),
+                decoration: const InputDecoration(labelText: 'Admin ID'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter admin ID';
@@ -640,9 +642,9 @@ class _AddEventPageState extends State<AddEventPage> {
                 },
                 onSaved: (value) => adminId = value!,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
-                child: Text('Add Event'),
+                child: const Text('Add Event'),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -673,39 +675,39 @@ class EventDetailsPage extends StatelessWidget {
   final Event event;
   final String userRole;
 
-  EventDetailsPage({required this.event, required this.userRole});
+  const EventDetailsPage({super.key, required this.event, required this.userRole});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(event.name),
-        backgroundColor: Color(0xFF00B2B2),
+        backgroundColor: const Color(0xFF00B2B2),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Date: ${event.date}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Time: ${event.timing}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
-            Text('Location: ${event.location}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 16),
-            Text('Description:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Text(event.description, style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
-            Text('Guest: ${event.guestName}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 8),
+            Text('Date: ${event.date}', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
+            Text('Time: ${event.timing}', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
+            Text('Location: ${event.location}', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 16),
+            const Text('Description:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(event.description, style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
+            Text('Guest: ${event.guestName}', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
             if (userRole == 'admin') ...[
-              Text('Gym ID: ${event.gymId}', style: TextStyle(fontSize: 14, color: Colors.grey)),
-              Text('Admin ID: ${event.adminId}', style: TextStyle(fontSize: 14, color: Colors.grey)),
+              Text('Gym ID: ${event.gymId}', style: const TextStyle(fontSize: 14, color: Colors.grey)),
+              Text('Admin ID: ${event.adminId}', style: const TextStyle(fontSize: 14, color: Colors.grey)),
             ],
             if (userRole == 'admin' || userRole == 'trainer') ...[
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
-                child: Text('Edit Event'),
+                child: const Text('Edit Event'),
                 onPressed: () {
                   // Implement edit event functionality
                 },

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MentorsPage extends StatelessWidget {
+  const MentorsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Use MediaQuery to get the screen dimensions
@@ -9,7 +11,7 @@ class MentorsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF00B2B2),
+        backgroundColor: const Color(0xFF00B2B2),
         title: Text(
           'Mentors',
           style: TextStyle(
@@ -28,7 +30,7 @@ class MentorsPage extends StatelessWidget {
           ),
         ],
       ),
-      backgroundColor: Color(0xFF00B2B2),
+      backgroundColor: const Color(0xFF00B2B2),
       body: ListView(
         padding: EdgeInsets.symmetric(
           horizontal: screenWidth * 0.08, // Adjusted padding
@@ -90,7 +92,7 @@ class MentorCard extends StatelessWidget {
   final String certifications;
   final String media;
 
-  MentorCard({
+  const MentorCard({super.key, 
     required this.index,
     required this.name,
     required this.image,

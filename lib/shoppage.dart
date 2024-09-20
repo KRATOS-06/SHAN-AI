@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ShopPage extends StatefulWidget {
+  const ShopPage({super.key});
+
   @override
   _ShopPageState createState() => _ShopPageState();
 }
@@ -35,7 +37,7 @@ class _ShopPageState extends State<ShopPage> {
     try {
       var url = 'https://gym-management-2.onrender.com/products/';
       var response =
-      await http.get(Uri.parse(url)).timeout(Duration(seconds: 10));
+      await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
@@ -174,8 +176,8 @@ class _ShopPageState extends State<ShopPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF00B2B2),
-        title: Text('SHOPS'),
+        backgroundColor: const Color(0xFF00B2B2),
+        title: const Text('SHOPS'),
         actions: [
           Padding(
             padding: EdgeInsets.all(screenWidth * 0.013),
@@ -188,9 +190,9 @@ class _ShopPageState extends State<ShopPage> {
           ),
         ],
       ),
-      backgroundColor: Color(0xFF00B2B2),
+      backgroundColor: const Color(0xFF00B2B2),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
         padding: EdgeInsets.all(screenWidth * 0.04),
         child: Column(
@@ -200,8 +202,8 @@ class _ShopPageState extends State<ShopPage> {
               controller: searchController,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Color(0x96D9D9D9),
-                prefixIcon: Icon(Icons.search),
+                fillColor: const Color(0x96D9D9D9),
+                prefixIcon: const Icon(Icons.search),
                 hintText: 'Search',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(screenWidth * 0.07),
@@ -226,7 +228,7 @@ class _ShopPageState extends State<ShopPage> {
                     ),
                   );
                 },
-                child: Text('Create New Product'),
+                child: const Text('Create New Product'),
               ),
             ],
 
@@ -275,7 +277,7 @@ class _ShopPageState extends State<ShopPage> {
             decoration: ShapeDecoration(
               color: Colors.white,
               shape: RoundedRectangleBorder(
-                side: BorderSide(width: 1, color: Color(0xFF9736C1)),
+                side: const BorderSide(width: 1, color: Color(0xFF9736C1)),
                 borderRadius: BorderRadius.circular(screenWidth * 0.05),
               ),
               image: DecorationImage(
@@ -291,7 +293,7 @@ class _ShopPageState extends State<ShopPage> {
               height: screenHeight * 0.11,
               padding: EdgeInsets.all(screenWidth * 0.02),
               decoration: ShapeDecoration(
-                color: Color(0xFFD2FFE8),
+                color: const Color(0xFFD2FFE8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(screenWidth * 0.05),
                 ),
@@ -304,24 +306,24 @@ class _ShopPageState extends State<ShopPage> {
                       children: [
                         Text(
                           product['name'],
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           '\$${product['price']}',
-                          style: TextStyle(fontSize: 12),
+                          style: const TextStyle(fontSize: 12),
                         ),
                       ],
                     ),
                   ),
                   if (userRole == 'admin') ...[
                     IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: const Icon(Icons.delete),
                       onPressed: () {
                         deleteProduct(product['_id']);
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.edit),
+                      icon: const Icon(Icons.edit),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -351,7 +353,7 @@ class _ShopPageState extends State<ShopPage> {
 class CreateProductPage extends StatelessWidget {
   final Function(String, String, String, String, int, String) onCreate;
 
-  CreateProductPage({required this.onCreate});
+  CreateProductPage({super.key, required this.onCreate});
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
@@ -364,7 +366,7 @@ class CreateProductPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create New Product'),
+        title: const Text('Create New Product'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -372,31 +374,31 @@ class CreateProductPage extends StatelessWidget {
           children: [
             TextField(
               controller: nameController,
-              decoration: InputDecoration(labelText: 'Product Name'),
+              decoration: const InputDecoration(labelText: 'Product Name'),
             ),
             TextField(
               controller: priceController,
-              decoration: InputDecoration(labelText: 'Price'),
+              decoration: const InputDecoration(labelText: 'Price'),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: descController,
-              decoration: InputDecoration(labelText: 'Description'),
+              decoration: const InputDecoration(labelText: 'Description'),
             ),
             TextField(
               controller: imageController,
-              decoration: InputDecoration(labelText: 'Image URL'),
+              decoration: const InputDecoration(labelText: 'Image URL'),
             ),
             TextField(
               controller: stockController,
-              decoration: InputDecoration(labelText: 'Stock Quantity'),
+              decoration: const InputDecoration(labelText: 'Stock Quantity'),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: reviewsController,
-              decoration: InputDecoration(labelText: 'Reviews'),
+              decoration: const InputDecoration(labelText: 'Reviews'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 onCreate(
@@ -409,7 +411,7 @@ class CreateProductPage extends StatelessWidget {
                 );
                 Navigator.pop(context); // Close the form after submission
               },
-              child: Text('Create Product'),
+              child: const Text('Create Product'),
             ),
           ],
         ),
@@ -424,7 +426,7 @@ class UpdateProductPage extends StatelessWidget {
   final Map<String, dynamic> product;
   final Function(String, String, String, String, String, int, String) onUpdate;
 
-  UpdateProductPage({required this.product, required this.onUpdate});
+  UpdateProductPage({super.key, required this.product, required this.onUpdate});
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
@@ -444,7 +446,7 @@ class UpdateProductPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Update Product'),
+        title: const Text('Update Product'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -452,31 +454,31 @@ class UpdateProductPage extends StatelessWidget {
           children: [
             TextField(
               controller: nameController,
-              decoration: InputDecoration(labelText: 'Product Name'),
+              decoration: const InputDecoration(labelText: 'Product Name'),
             ),
             TextField(
               controller: priceController,
-              decoration: InputDecoration(labelText: 'Price'),
+              decoration: const InputDecoration(labelText: 'Price'),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: descController,
-              decoration: InputDecoration(labelText: 'Description'),
+              decoration: const InputDecoration(labelText: 'Description'),
             ),
             TextField(
               controller: imageController,
-              decoration: InputDecoration(labelText: 'Image URL'),
+              decoration: const InputDecoration(labelText: 'Image URL'),
             ),
             TextField(
               controller: stockController,
-              decoration: InputDecoration(labelText: 'Stock Quantity'),
+              decoration: const InputDecoration(labelText: 'Stock Quantity'),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: reviewsController,
-              decoration: InputDecoration(labelText: 'Reviews'),
+              decoration: const InputDecoration(labelText: 'Reviews'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 onUpdate(
@@ -490,7 +492,7 @@ class UpdateProductPage extends StatelessWidget {
                 );
                 Navigator.pop(context);
               },
-              child: Text('Update Product'),
+              child: const Text('Update Product'),
             ),
           ],
         ),
@@ -503,7 +505,7 @@ class ProductDetailPage extends StatelessWidget {
   final Map<String, dynamic> product;
   final String userRole;
 
-  ProductDetailPage({required this.product, required this.userRole});
+  const ProductDetailPage({super.key, required this.product, required this.userRole});
 
   @override
   Widget build(BuildContext context) {
@@ -517,27 +519,27 @@ class ProductDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(product['image']),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text(
               product['desc'],
-              style: TextStyle(fontSize: 18.0),
+              style: const TextStyle(fontSize: 18.0),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text(
               '\$${product['price']}',
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text('Stock: ${product['stock']}'),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text('Reviews: ${product['reviews']}'),
             if (userRole != 'admin') ...[
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
                   // Implement add to cart functionality
                 },
-                child: Text('Add to Cart'),
+                child: const Text('Add to Cart'),
               ),
             ],
           ],

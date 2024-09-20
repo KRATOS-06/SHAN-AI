@@ -39,7 +39,7 @@ class _ReviewPageState extends State<ReviewPage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Color(0xFF00B2B2),
+      backgroundColor: const Color(0xFF00B2B2),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,7 +76,7 @@ class _ReviewPageState extends State<ReviewPage> {
             ),
             // Title
             Padding(
-              padding: EdgeInsets.all(0),
+              padding: const EdgeInsets.all(0),
               child: Center(
                 child: Text(
                   "Review",
@@ -119,9 +119,9 @@ class _ReviewPageState extends State<ReviewPage> {
                         fontSize: screenWidth * 0.05,
                       ),
                       filled: true,
-                      fillColor: Color(0xffffD9D9D9),
+                      fillColor: const Color(0xffffd9d9d9),
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                        borderSide: const BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(screenWidth * 0.06),
                       ),
                     ),
@@ -140,7 +140,7 @@ class _ReviewPageState extends State<ReviewPage> {
             ListView.builder(
               itemCount: cimages.length,
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 return Padding(
                   padding: EdgeInsets.symmetric(
@@ -148,7 +148,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   child: Container(
                     padding: EdgeInsets.all(screenWidth * 0.05),
                     decoration: BoxDecoration(
-                      color: Color(0xffffFFE7E7),
+                      color: const Color(0xffffffe7e7),
                       borderRadius: BorderRadius.circular(screenWidth * 0.08),
                     ),
                     child: Column(
