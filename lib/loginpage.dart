@@ -26,18 +26,17 @@ class _LoginPageState extends State<LoginPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print(user);
     Uri url;
-    if (user == "User") {
+    if (user == "Admin") {
       url = Uri.parse(
-          'https://gym-management-2.onrender.com/accounts/user_login');
+          'https://gym-management-2.onrender.com/accounts/admin_login');
     } else if (user == "SuperUser") {
       url = Uri.parse(
           'https://gym-management-2.onrender.com/accounts/superlogin/');
     } else {
       url = Uri.parse(
-          'https://gym-management-2.onrender.com/accounts/admin_login');
+          'https://gym-management-2.onrender.com/accounts/user_login');
     }
     try {
-      await prefs.remove('auth_token');
       final response = await http.post(
         url,
         headers: {
@@ -49,12 +48,14 @@ class _LoginPageState extends State<LoginPage> {
         }),
       );
 
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final String userId = responseData['user_id'];
+
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
       if (response.statusCode == 200 && user == "SuperUser") {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final String userId = responseData['user_id'];
         // Login successful
+        await prefs.setString('user', "superuser");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -64,11 +65,16 @@ class _LoginPageState extends State<LoginPage> {
           (user == "Admin" || user == "User")) {
         print('hi');
 
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        final String userId = responseData['user_id'];
         await prefs.setString('user_id', userId);
         await prefs.setBool('islogin', true);
+        if (user == "Admin"){
+          final String gymId = responseData['gym_id'];
+          await prefs.setString('gym_id', gymId);
+          await prefs.setString('user', "admin");
+        }
+        else {
+          await prefs.setString('user', "user");
+        }
 
         Navigator.pushReplacement(
           context,

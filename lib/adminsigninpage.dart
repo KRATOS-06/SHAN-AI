@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
-import 'package:gym_management/homepage.dart';
+import 'package:gym_management/loginpage.dart';
 
 class AdminSignInPage extends StatefulWidget {
   final String userid;
@@ -171,7 +171,7 @@ class _AdminSignInPageState extends State<AdminSignInPage> {
           print('Registration successful ${response.body}');
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => WorkoutHomePage()),
+            MaterialPageRoute(builder: (context) => LoginPage()),
           );
         } else {
           // If the server returns an error response

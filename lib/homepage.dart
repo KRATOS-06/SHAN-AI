@@ -8,6 +8,8 @@ import 'package:gym_management/contactuspage.dart';
 import 'package:gym_management/mentorpage.dart';
 import 'package:gym_management/loginpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Event {
   final String name;
@@ -36,6 +38,26 @@ Future<void> _logout(BuildContext context) async {
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    // Get user_id from SharedPreferences
+    String? userId = prefs.getString('user_id');
+
+    if (userId != null) {
+      // Post user_id to the logout API
+      final response = await http.post(
+        Uri.parse('https://gym-management-2.onrender.com/accounts/logout/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId,
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to logout on server');
+      }
+    }
+
     // Clear all relevant user data
     await prefs.clear(); // Clears all stored data in SharedPreferences
     print("User has been logged out");
@@ -46,7 +68,7 @@ Future<void> _logout(BuildContext context) async {
       MaterialPageRoute(builder: (context) => LoginPage()),
     );
 
-    // Optionally, show a confirmation message
+    // Show a confirmation message
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Successfully logged out')),
     );
@@ -78,6 +100,18 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
     ),
     // Add more events as needed
   ];
+  String userRole = 'user';
+  @override
+  void initState() {
+    super.initState();
+    _loadUserRole();
+  }
+  Future<void> _loadUserRole() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userRole = prefs.getString('user') ?? 'user';
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -204,32 +238,43 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
               Navigator.pop(context);
             },
           ),
-          ListTile(
-            leading: Icon(Icons.fitness_center),
-            title: Text('Plan'),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => MembershipPlansScreen()));
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.people),
-            title: Text('Mentors'),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MentorsPage()));
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.shop),
-            title: Text('Shop'),
-            onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => ShopPage()));
-            },
-          ),
+          if (true) ...[
+            ListTile(
+              leading: Icon(Icons.fitness_center),
+              title: Text('Plan'),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MembershipPlansScreen()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.people),
+              title: Text('Mentors'),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MentorsPage()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.shop),
+              title: Text('Shop'),
+              onTap: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => ShopPage()));
+              },
+            ),
+          ],
+          if (userRole == 'admin' || userRole == 'mentor') ...[
+            ListTile(
+              leading: Icon(Icons.event),
+              title: Text('Manage Events'),
+              onTap: () {
+                _addNewEvent();
+              },
+            ),
+          ],
           ListTile(
             leading: Icon(Icons.rate_review),
             title: Text('Reviews'),
@@ -264,7 +309,6 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
         ],
       ),
     );
-
   }
 
   Widget _buildEventStories(BoxConstraints constraints) {
@@ -401,25 +445,31 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
     );
   }
   void _addNewEvent() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddEventPage(
-          onEventAdded: (Event newEvent) {
-            setState(() {
-              events.add(newEvent);
-            });
-          },
+    if (userRole == 'admin' || userRole == 'mentor') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddEventPage(
+            onEventAdded: (Event newEvent) {
+              setState(() {
+                events.add(newEvent);
+              });
+            },
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You do not have permission to add events.')),
+      );
+    }
   }
 
   void _showEventDetails(Event event) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EventDetailsPage(event: event),
+        builder: (context) => EventDetailsPage(event: event, userRole: userRole),
       ),
     );
   }
@@ -621,8 +671,9 @@ class _AddEventPageState extends State<AddEventPage> {
 
 class EventDetailsPage extends StatelessWidget {
   final Event event;
+  final String userRole;
 
-  EventDetailsPage({required this.event});
+  EventDetailsPage({required this.event, required this.userRole});
 
   @override
   Widget build(BuildContext context) {
@@ -647,8 +698,19 @@ class EventDetailsPage extends StatelessWidget {
             SizedBox(height: 16),
             Text('Guest: ${event.guestName}', style: TextStyle(fontSize: 18)),
             SizedBox(height: 8),
-            Text('Gym ID: ${event.gymId}', style: TextStyle(fontSize: 14, color: Colors.grey)),
-            Text('Admin ID: ${event.adminId}', style: TextStyle(fontSize: 14, color: Colors.grey)),
+            if (userRole == 'admin') ...[
+              Text('Gym ID: ${event.gymId}', style: TextStyle(fontSize: 14, color: Colors.grey)),
+              Text('Admin ID: ${event.adminId}', style: TextStyle(fontSize: 14, color: Colors.grey)),
+            ],
+            if (userRole == 'admin' || userRole == 'trainer') ...[
+              SizedBox(height: 20),
+              ElevatedButton(
+                child: Text('Edit Event'),
+                onPressed: () {
+                  // Implement edit event functionality
+                },
+              ),
+            ],
           ],
         ),
       ),

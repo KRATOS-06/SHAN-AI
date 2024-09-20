@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ShopPage extends StatefulWidget {
   @override
@@ -11,13 +12,22 @@ class _ShopPageState extends State<ShopPage> {
   String selectedCategory = 'Whey Protein';
   List<dynamic> products = [];
   List<dynamic> filteredProducts = [];
-  bool isLoading = true; // Loading indicator
+  bool isLoading = true;
   TextEditingController searchController = TextEditingController();
+  String userRole = 'user'; // Default role
 
   @override
   void initState() {
     super.initState();
+    _loadUserRole();
     fetchProducts();
+  }
+
+  Future<void> _loadUserRole() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userRole = prefs.getString('user') ?? 'user';
+    });
   }
 
   // Fetch data from API with error handling and timeout
@@ -76,6 +86,10 @@ class _ShopPageState extends State<ShopPage> {
   // Create a new product
   Future<void> createProduct(String name, String price, String desc,
       String image, int stock, String reviews) async {
+    if (userRole != 'admin') {
+      _showErrorMessage('You do not have permission to create products.');
+      return;
+    }
     try {
       var url = 'https://gym-management-2.onrender.com/products/';
       var response = await http.post(
@@ -103,6 +117,10 @@ class _ShopPageState extends State<ShopPage> {
 
   // Delete a product
   Future<void> deleteProduct(String productId) async {
+    if (userRole != 'admin') {
+      _showErrorMessage('You do not have permission to delete products.');
+      return;
+    }
     try {
       var url = 'https://gym-management-2.onrender.com/products/$productId';
       var response = await http.delete(Uri.parse(url));
@@ -120,6 +138,10 @@ class _ShopPageState extends State<ShopPage> {
   // Update a product
   Future<void> updateProduct(String productId, String name, String price,
       String desc, String image, int stock, String reviews) async {
+    if (userRole != 'admin') {
+      _showErrorMessage('You do not have permission to update products.');
+      return;
+    }
     try {
       var url = 'https://gym-management-2.onrender.com/products/$productId';
       var response = await http.put(
@@ -168,13 +190,12 @@ class _ShopPageState extends State<ShopPage> {
       ),
       backgroundColor: Color(0xFF00B2B2),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())// Show message if no products
+          ? Center(child: CircularProgressIndicator())
           : Padding(
         padding: EdgeInsets.all(screenWidth * 0.04),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search Bar
             TextField(
               controller: searchController,
               decoration: InputDecoration(
@@ -187,28 +208,28 @@ class _ShopPageState extends State<ShopPage> {
                   borderSide: BorderSide.none,
                 ),
               ),
-              onChanged: filterProducts, // Filter products as user types
+              onChanged: filterProducts,
             ),
-            SizedBox(height: screenHeight * 0.02), // Add some space below the search bar
+            SizedBox(height: screenHeight * 0.02),
 
-            // Create Button
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CreateProductPage(
-                      onCreate: (name, price, desc, image, stock, reviews) {
-                        createProduct(name, price, desc, image, stock, reviews);
-                      },
+            if (userRole == 'admin') ...[
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreateProductPage(
+                        onCreate: (name, price, desc, image, stock, reviews) {
+                          createProduct(name, price, desc, image, stock, reviews);
+                        },
+                      ),
                     ),
-                  ),
-                );
-              },
-              child: Text('Create New Product'),
-            ),
+                  );
+                },
+                child: Text('Create New Product'),
+              ),
+            ],
 
-            // Product Grid
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -224,7 +245,10 @@ class _ShopPageState extends State<ShopPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ProductDetailPage(product: filteredProducts[index]),
+                          builder: (context) => ProductDetailPage(
+                            product: filteredProducts[index],
+                            userRole: userRole,
+                          ),
                         ),
                       );
                     },
@@ -255,7 +279,7 @@ class _ShopPageState extends State<ShopPage> {
                 borderRadius: BorderRadius.circular(screenWidth * 0.05),
               ),
               image: DecorationImage(
-                image: NetworkImage(product['image']), // Use NetworkImage for images from API
+                image: NetworkImage(product['image']),
                 fit: BoxFit.contain,
               ),
             ),
@@ -289,26 +313,30 @@ class _ShopPageState extends State<ShopPage> {
                       ],
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () {
-                      deleteProduct(product['_id']);
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      updateProduct(
-                        product['_id'],
-                        'Updated Name',
-                        '34.99',
-                        'Updated description',
-                        product['image'],
-                        product['stock'],
-                        product['reviews'],
-                      );
-                    },
-                  ),
+                  if (userRole == 'admin') ...[
+                    IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        deleteProduct(product['_id']);
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UpdateProductPage(
+                              product: product,
+                              onUpdate: (id, name, price, desc, image, stock, reviews) {
+                                updateProduct(id, name, price, desc, image, stock, reviews);
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -391,10 +419,91 @@ class CreateProductPage extends StatelessWidget {
 }
 
 // Product Detail Page
+
+class UpdateProductPage extends StatelessWidget {
+  final Map<String, dynamic> product;
+  final Function(String, String, String, String, String, int, String) onUpdate;
+
+  UpdateProductPage({required this.product, required this.onUpdate});
+
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+  final TextEditingController descController = TextEditingController();
+  final TextEditingController imageController = TextEditingController();
+  final TextEditingController stockController = TextEditingController();
+  final TextEditingController reviewsController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    nameController.text = product['name'];
+    priceController.text = product['price'].toString();
+    descController.text = product['desc'];
+    imageController.text = product['image'];
+    stockController.text = product['stock'].toString();
+    reviewsController.text = product['reviews'];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Update Product'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(labelText: 'Product Name'),
+            ),
+            TextField(
+              controller: priceController,
+              decoration: InputDecoration(labelText: 'Price'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: descController,
+              decoration: InputDecoration(labelText: 'Description'),
+            ),
+            TextField(
+              controller: imageController,
+              decoration: InputDecoration(labelText: 'Image URL'),
+            ),
+            TextField(
+              controller: stockController,
+              decoration: InputDecoration(labelText: 'Stock Quantity'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: reviewsController,
+              decoration: InputDecoration(labelText: 'Reviews'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                onUpdate(
+                  product['_id'],
+                  nameController.text,
+                  priceController.text,
+                  descController.text,
+                  imageController.text,
+                  int.parse(stockController.text),
+                  reviewsController.text,
+                );
+                Navigator.pop(context);
+              },
+              child: Text('Update Product'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class ProductDetailPage extends StatelessWidget {
   final Map<String, dynamic> product;
+  final String userRole;
 
-  ProductDetailPage({required this.product});
+  ProductDetailPage({required this.product, required this.userRole});
 
   @override
   Widget build(BuildContext context) {
@@ -422,9 +531,19 @@ class ProductDetailPage extends StatelessWidget {
             Text('Stock: ${product['stock']}'),
             SizedBox(height: 16.0),
             Text('Reviews: ${product['reviews']}'),
+            if (userRole != 'admin') ...[
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  // Implement add to cart functionality
+                },
+                child: Text('Add to Cart'),
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 }
+
