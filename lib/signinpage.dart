@@ -153,7 +153,7 @@ class _SignInPageState extends State<SignInPage> {
         // Handle any exceptions (like network issues)
         print('An error occurred: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Network error: Unable to login')),
+          const SnackBar(content: Text('Network error: Unable to login')),
         );
       }
     }
@@ -181,7 +181,7 @@ class _SignInPageState extends State<SignInPage> {
 
     return Scaffold(
       body: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           width: double.infinity,
           child: Column(
             children: [
@@ -193,8 +193,8 @@ class _SignInPageState extends State<SignInPage> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Color(0xffff22D6E0),
-                      Color(0xffff79BED6).withOpacity(0.4),
+                      const Color(0xffff22d6e0),
+                      const Color(0xffff79bed6).withOpacity(0.4),
                     ],
                   ),
                 ),
@@ -234,7 +234,7 @@ class _SignInPageState extends State<SignInPage> {
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.4),
                             border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.black),
                               borderRadius:
                               BorderRadius.circular(screenWidth * 0.06),
                             ),
@@ -262,7 +262,7 @@ class _SignInPageState extends State<SignInPage> {
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.4),
                             border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.black),
                               borderRadius:
                               BorderRadius.circular(screenWidth * 0.06),
                             ),
@@ -290,7 +290,7 @@ class _SignInPageState extends State<SignInPage> {
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.4),
                             border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.black),
                               borderRadius:
                               BorderRadius.circular(screenWidth * 0.06),
                             ),
@@ -318,7 +318,7 @@ class _SignInPageState extends State<SignInPage> {
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.4),
                             border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.black),
                               borderRadius:
                               BorderRadius.circular(screenWidth * 0.06),
                             ),
@@ -346,7 +346,7 @@ class _SignInPageState extends State<SignInPage> {
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.4),
                             border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.black),
                               borderRadius:
                               BorderRadius.circular(screenWidth * 0.06),
                             ),
@@ -375,7 +375,7 @@ class _SignInPageState extends State<SignInPage> {
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.4),
                             border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.black),
                               borderRadius:
                               BorderRadius.circular(screenWidth * 0.06),
                             ),
@@ -404,7 +404,7 @@ class _SignInPageState extends State<SignInPage> {
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.4),
                             border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.black),
                               borderRadius:
                               BorderRadius.circular(screenWidth * 0.06),
                             ),
@@ -435,7 +435,7 @@ class _SignInPageState extends State<SignInPage> {
                                   filled: true,
                                   fillColor: Colors.white.withOpacity(0.4),
                                   border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black),
+                                    borderSide: const BorderSide(color: Colors.black),
                                     borderRadius: BorderRadius.circular(
                                         screenWidth * 0.06),
                                   ),
@@ -465,7 +465,7 @@ class _SignInPageState extends State<SignInPage> {
                                   filled: true,
                                   fillColor: Colors.white.withOpacity(0.4),
                                   border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black),
+                                    borderSide: const BorderSide(color: Colors.black),
                                     borderRadius: BorderRadius.circular(
                                         screenWidth * 0.06),
                                   ),
@@ -496,7 +496,7 @@ class _SignInPageState extends State<SignInPage> {
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.4),
                             border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
+                              borderSide: const BorderSide(color: Colors.black),
                               borderRadius:
                               BorderRadius.circular(screenWidth * 0.06),
                             ),
@@ -508,7 +508,7 @@ class _SignInPageState extends State<SignInPage> {
                           height: screenHeight * 0.08,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: Color(0xffff066589),
+                            color: const Color(0xffff066589),
                             borderRadius:
                             BorderRadius.circular(screenWidth * 0.06),
                           ),

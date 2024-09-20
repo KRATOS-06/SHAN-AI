@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:gym_management/paymentpage.dart';
 
 class MembershipPlansScreen extends StatefulWidget {
+  const MembershipPlansScreen({super.key});
+
   @override
   _MembershipPlansScreenState createState() => _MembershipPlansScreenState();
 }
 
 class _MembershipPlansScreenState extends State<MembershipPlansScreen> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool _isScrolled = false;
 
   @override
@@ -38,7 +40,7 @@ class _MembershipPlansScreenState extends State<MembershipPlansScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Color(0xff00b2b2),
+      backgroundColor: const Color(0xff00b2b2),
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(
@@ -50,7 +52,7 @@ class _MembershipPlansScreenState extends State<MembershipPlansScreen> {
           },
           color: Colors.black,
         ),
-        backgroundColor: Color(0xff00b2b2),
+        backgroundColor: const Color(0xff00b2b2),
         elevation: 0,
         actions: [
           Padding(
@@ -73,6 +75,8 @@ class _MembershipPlansScreenState extends State<MembershipPlansScreen> {
 }
 
 class MembershipPlans extends StatelessWidget {
+  const MembershipPlans({super.key});
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -124,7 +128,7 @@ class MembershipPlans extends StatelessWidget {
               price: '\$100',
               description:
               'Start strong with the essentials, and build your fitness foundation.',
-              features: [
+              features: const [
                 'Essential gym access',
                 'Personalized workout routine',
                 'Flexible timings',
@@ -139,7 +143,7 @@ class MembershipPlans extends StatelessWidget {
               price: '\$950',
               description:
               'Push beyond your limits, and achieve elite-level results.',
-              features: [
+              features: const [
                 '24/7 Premium access',
                 'Personal training',
                 'Advanced nutrition',
@@ -154,7 +158,7 @@ class MembershipPlans extends StatelessWidget {
               price: '\$500',
               description:
               'Challenge yourself to grow, and elevate your workout routine.',
-              features: [
+              features: const [
                 'Full gym access',
                 'Group classes',
                 'Nutrition tips',
@@ -217,7 +221,7 @@ class MembershipCard extends StatelessWidget {
   final Color color2;
   final Color ribbonColor;
 
-  MembershipCard({
+  const MembershipCard({super.key, 
     required this.planType,
     required this.price,
     required this.description,
@@ -309,16 +313,9 @@ class MembershipCard extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PaymentPage()),
+                      MaterialPageRoute(builder: (context) => const PaymentPage()),
                     );
                   },
-                  child: Text(
-                    'JOIN NOW',
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.045,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ribbonColor,
                     foregroundColor: Colors.white,
@@ -328,6 +325,13 @@ class MembershipCard extends StatelessWidget {
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(screenWidth * 0.025),
+                    ),
+                  ),
+                  child: Text(
+                    'JOIN NOW',
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.045,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),

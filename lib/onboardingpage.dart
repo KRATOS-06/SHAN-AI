@@ -58,12 +58,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xffff79BED6), Color(0xffff25aee2)],
+          colors: [Color(0xffff79bed6), Color(0xffff25aee2)],
         ),
       ),
       child: Column(
         children: [
-          Container(
+          SizedBox(
             height: screenSize.height * 0.55,
             width: double.infinity,
             child: image,
@@ -101,12 +101,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xffff79BED6), Color(0xffff25aee2)],
+          colors: [Color(0xffff79bed6), Color(0xffff25aee2)],
         ),
       ),
       child: Column(
         children: [
-          Container(
+          SizedBox(
             height: screenSize.height * 0.55,
             width: double.infinity,
             child: image,
@@ -138,7 +138,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             height: screenSize.height * 0.07,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: Color(0xffff066589),
+              color: const Color(0xffff066589),
               borderRadius: BorderRadius.circular(25.0),
             ),
             child: FittedBox(
@@ -167,7 +167,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Widget buildBottomSheet(BuildContext context, Size screenSize) {
     return Container(
       height: screenSize.height * 0.08,
-      color: Color(0xffff25aee2),
+      color: const Color(0xffff25aee2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -184,19 +184,19 @@ class _OnboardingPageState extends State<OnboardingPage> {
             child: SmoothPageIndicator(
               controller: controller,
               count: 3,
-              effect: WormEffect(
+              effect: const WormEffect(
                 spacing: 16,
                 dotColor: Colors.white,
                 activeDotColor: Color(0xffff066589),
               ),
               onDotClicked: (index) => controller.animateToPage(index,
-                  duration: Duration(milliseconds: 500), curve: Curves.easeIn),
+                  duration: const Duration(milliseconds: 500), curve: Curves.easeIn),
             ),
           ),
           FittedBox(
             child: TextButton(
               onPressed: () => controller.nextPage(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 curve: Curves.easeInOut,
               ),
               child: Text(

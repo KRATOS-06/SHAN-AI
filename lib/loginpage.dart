@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -26,18 +28,17 @@ class _LoginPageState extends State<LoginPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print(user);
     Uri url;
-    if (user == "User") {
+    if (user == "Admin") {
       url = Uri.parse(
-          'https://gym-management-2.onrender.com/accounts/user_login');
+          'https://gym-management-2.onrender.com/accounts/admin_login');
     } else if (user == "SuperUser") {
       url = Uri.parse(
           'https://gym-management-2.onrender.com/accounts/superlogin/');
     } else {
       url = Uri.parse(
-          'https://gym-management-2.onrender.com/accounts/admin_login');
+          'https://gym-management-2.onrender.com/accounts/user_login');
     }
     try {
-      await prefs.remove('auth_token');
       final response = await http.post(
         url,
         headers: {
@@ -49,12 +50,14 @@ class _LoginPageState extends State<LoginPage> {
         }),
       );
 
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final String userId = responseData['user_id'];
+
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
       if (response.statusCode == 200 && user == "SuperUser") {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final String userId = responseData['user_id'];
         // Login successful
+        await prefs.setString('user', "superuser");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -64,11 +67,16 @@ class _LoginPageState extends State<LoginPage> {
           (user == "Admin" || user == "User")) {
         print('hi');
 
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        final String userId = responseData['user_id'];
         await prefs.setString('user_id', userId);
         await prefs.setBool('islogin', true);
+        if (user == "Admin"){
+          final String gymId = responseData['gym_id'];
+          await prefs.setString('gym_id', gymId);
+          await prefs.setString('user', "admin");
+        }
+        else {
+          await prefs.setString('user', "user");
+        }
 
         Navigator.pushReplacement(
           context,
@@ -91,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
     } catch (error) {
       print('Error: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Network error: Unable to login')),
+        const SnackBar(content: Text('Network error: Unable to login')),
       );
     }
   }
@@ -106,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
       },
       child: Scaffold(
         body: SingleChildScrollView(
-          child: Container(
+          child: SizedBox(
             height: screenSize.height,
             child: Stack(
               children: [
@@ -114,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                   top: screenSize.height * 0.12,
                   right: screenSize.width * 0.01,
                   left: screenSize.width * 0.02,
-                  child: Container(
+                  child: SizedBox(
                     height: screenSize.height * 0.8,
                     width: screenSize.width * 0.10,
                     child: Image.asset(
@@ -131,8 +139,8 @@ class _LoginPageState extends State<LoginPage> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Color(0xffff79BED6).withOpacity(0.4),
-                        Color(0xffff22D6E0).withOpacity(0.6),
+                        const Color(0xffff79bed6).withOpacity(0.4),
+                        const Color(0xffff22d6e0).withOpacity(0.6),
                       ],
                     ),
                   ),
@@ -154,15 +162,15 @@ class _LoginPageState extends State<LoginPage> {
                   left: screenSize.width * 0.08,
                   right: screenSize.width * 0.08,
                   child: ExpansionTile(
-                    backgroundColor: Color(0xff066589),
+                    backgroundColor: const Color(0xff066589),
                     textColor: Colors.white,
                     iconColor: Colors.white,
                     title: Container(
-                      color: Color(0xff066589),
-                      padding: EdgeInsets.all(8),
+                      color: const Color(0xff066589),
+                      padding: const EdgeInsets.all(8),
                       child: Text(
                         user, // Displays the selected user
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           backgroundColor: Color(0xff066589),
                         ),
@@ -176,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     children: [
                       Container(
-                        color: Color(0xff066589),
+                        color: const Color(0xff066589),
                         // Solid color for the expanded content
                         child: ListTile(
                           title: Text(user == "Admin" ? "User" : "Admin"),
@@ -191,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       Container(
-                        color: Color(0xff066589),
+                        color: const Color(0xff066589),
                         child: ListTile(
                           title:
                           Text(user == "SuperUser" ? "User" : "SuperUser"),
@@ -339,7 +347,7 @@ class _LoginPageState extends State<LoginPage> {
                     height: screenSize.height * 0.08,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: Color(0xffff066589),
+                      color: const Color(0xffff066589),
                       borderRadius: BorderRadius.circular(25.0),
                     ),
                     child: TextButton(
@@ -380,7 +388,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => SignInPage()),
+                                builder: (context) => const SignInPage()),
                           );
                         },
                         child: Text(

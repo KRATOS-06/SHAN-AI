@@ -14,11 +14,11 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xFF00B2B2),
+      color: const Color(0xFF00B2B2),
       child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back,
                 size: 25,
               ),
@@ -27,11 +27,11 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               color: Colors.black,
             ),
-            backgroundColor: Color(0xff00b2b2),
+            backgroundColor: const Color(0xff00b2b2),
             elevation: 0,
             actions: [
               Padding(
-                padding: EdgeInsets.only(right:10),
+                padding: const EdgeInsets.only(right:10),
                 child: Image.asset(
                   'assets/gym_logo.png',
                   height: 50,
@@ -46,8 +46,8 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 Stack(children: [
                   Container(
-                    margin: EdgeInsets.only(left: 40, top:10),
-                    child: Align(
+                    margin: const EdgeInsets.only(left: 40, top:10),
+                    child: const Align(
                       alignment: Alignment.topLeft,
                       child: Text(
                         "Profile",
@@ -61,7 +61,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   Container(
-                      margin: EdgeInsets.only(left: 180, top: 10),
+                      margin: const EdgeInsets.only(left: 180, top: 10),
                       width: 150,
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.deepOrange),
@@ -71,7 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Row(
                             children: [
                               Image.asset('assets/fire.png'),
-                              Text(
+                              const Text(
                                 "  Membership",
                                 style: TextStyle(color: Colors.deepOrange),
                               ),
@@ -80,8 +80,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 ]),
                 Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 10.0),
                       child: CircleAvatar(
                         backgroundImage: AssetImage('assets/profile.png'),
                         radius: 50,
@@ -90,15 +90,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           " Steeve Myles",
                           style: TextStyle(color: Colors.black, fontSize: 30),
                         ),
-                        Text(
+                        const Text(
                           "  Weight : 80Kg",
                           style: TextStyle(color: Colors.black, fontSize: 20),
                         ),
-                        Text(
+                        const Text(
                           "  Height : 120cm",
                           style: TextStyle(color: Colors.black, fontSize: 20),
                         ),
@@ -109,7 +109,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               height: 50,
                               fit: BoxFit.cover,
                             ),
-                            Text(
+                            const Text(
                               "Intermediate    360hrs",
                               style:
                                   TextStyle(color: Colors.black, fontSize: 20),
@@ -120,16 +120,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     )
                   ],
                 ),
-                Text(
+                const Text(
                   "    Statistics",
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 25,
                       fontWeight: FontWeight.bold),
                 ),
-                Text("         This week"),
+                const Text("         This week"),
                 Container(
-                  margin: EdgeInsets.only(left: 10,right: 10),
+                  margin: const EdgeInsets.only(left: 10,right: 10),
                   height: 200,
                   width: 370,
                   alignment: Alignment.center,
@@ -141,7 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: const EdgeInsets.only(left: 30),
                     child: Row(
                       children: [
-                        Text.rich(
+                        const Text.rich(
                           TextSpan(
                             children: [
                               TextSpan(
@@ -157,12 +157,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             ],
                           ),
                         ),
-                        Container(
+                        SizedBox(
                           height: 150,
                           width: 230,
                           child: BarChart(BarChartData(
                               borderData: FlBorderData(
-                                  border: Border(
+                                  border: const Border(
                                       top: BorderSide.none,
                                       right: BorderSide.none,
                                       left: BorderSide.none,
@@ -174,32 +174,32 @@ class _ProfilePageState extends State<ProfilePage> {
                                     getTitlesWidget: (value, meta) {
                                       switch (value.toInt()) {
                                         case 1:
-                                          return Text('Mon');
+                                          return const Text('Mon');
                                         case 2:
-                                          return Text('Tue');
+                                          return const Text('Tue');
                                         case 3:
-                                          return Text('Wed');
+                                          return const Text('Wed');
                                         case 4:
-                                          return Text('Thur');
+                                          return const Text('Thur');
                                         case 5:
-                                          return Text('Fri');
+                                          return const Text('Fri');
                                         case 6:
-                                          return Text('Sat');
+                                          return const Text('Sat');
                                         case 7:
-                                          return Text('Sun');
+                                          return const Text('Sun');
                                         default:
-                                          return Text('');
+                                          return const Text('');
                                       }
                                     },
                                   ),
                                 ),
-                                leftTitles: AxisTitles(
+                                leftTitles: const AxisTitles(
                                   sideTitles: SideTitles(showTitles: false),
                                 ),
-                                topTitles: AxisTitles(
+                                topTitles: const AxisTitles(
                                   sideTitles: SideTitles(showTitles: false),
                                 ),
-                                rightTitles: AxisTitles(
+                                rightTitles: const AxisTitles(
                                   sideTitles: SideTitles(showTitles: false),
                                 ),
                               ),
@@ -260,13 +260,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(top: 13),
-                  child: Text(
+                  margin: const EdgeInsets.only(top: 13),
+                  child: const Text(
                     "      Activity",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Padding(
@@ -284,12 +284,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(children: [
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 "  Steps        ",
                                 style: TextStyle(
                                     fontSize: 23, fontWeight: FontWeight.bold),
                               ),
-                              Container(
+                              SizedBox(
                                   height: 50,
                                   width: 50,
                                   child: Image.asset('assets/steps.png')),
@@ -313,14 +313,14 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: Container(
                                 width: 65.0,
                                 height: 65.0,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: Colors.white,
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text("2973"),
+                                    const Text("2973"),
                                     Image.asset(
                                       'assets/foot.png',
                                       height: 20.0,
@@ -341,8 +341,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(
                           children: [
                             Row(children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
+                              const Padding(
+                                padding: EdgeInsets.only(top: 10.0),
                                 child: Text(
                                   "  Heart Rate ",
                                   style: TextStyle(
@@ -350,20 +350,20 @@ class _ProfilePageState extends State<ProfilePage> {
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              Container(
+                              SizedBox(
                                   width: 50,
                                   height: 50,
                                   child: Image.asset('assets/heart.png'))
                             ]),
                             Container(
-                                margin: EdgeInsets.only(top: 10.0),
+                                margin: const EdgeInsets.only(top: 10.0),
                                 width: 90,
                                 height: 37,
                                 child: Image.asset(
                                   'assets/heartrate.png',
                                   fit: BoxFit.cover,
                                 )),
-                            Text(
+                            const Text(
                               "120/80 mmHg",
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
@@ -380,8 +380,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(
                           children: [
                             Row(children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
+                              const Padding(
+                                padding: EdgeInsets.only(top: 10.0),
                                 child: Text(
                                   "  Distance   ",
                                   style: TextStyle(
@@ -389,7 +389,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              Container(
+                              SizedBox(
                                   width: 60,
                                   height: 33,
                                   child: Image.asset(
@@ -397,8 +397,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     fit: BoxFit.cover,
                                   ))
                             ]),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20.0),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 20.0),
                               child: Text(
                                 "6.9 Km/H",
                                 style: TextStyle(
@@ -419,8 +419,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(
                           children: [
                             Row(children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
+                              const Padding(
+                                padding: EdgeInsets.only(top: 10.0),
                                 child: Text(
                                   "  Sleep          ",
                                   style: TextStyle(
@@ -436,8 +436,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 fit: BoxFit.cover,
                               ))
                             ]),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20.0),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 20.0),
                               child: Text(
                                 "5h 45 mins",
                                 style: TextStyle(
@@ -458,8 +458,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(
                           children: [
                             Row(children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
+                              const Padding(
+                                padding: EdgeInsets.only(top: 10.0),
                                 child: Text(
                                   " Water Intake",
                                   style: TextStyle(
@@ -475,8 +475,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 fit: BoxFit.cover,
                               ))
                             ]),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20.0),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 20.0),
                               child: Text(
                                 "40.03 oz",
                                 style: TextStyle(
@@ -497,8 +497,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(
                           children: [
                             Row(children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
+                              const Padding(
+                                padding: EdgeInsets.only(top: 10.0),
                                 child: Text(
                                   "  BMI            ",
                                   style: TextStyle(
@@ -506,13 +506,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              Container(
+                              SizedBox(
                                   width: 50,
                                   height: 50,
                                   child: Image.asset('assets/weight.png'))
                             ]),
                             Container(
-                                margin: EdgeInsets.only(top: 10.0),
+                                margin: const EdgeInsets.only(top: 10.0),
                                 width: 90,
                                 height: 65,
                                 child: Image.asset(
@@ -531,8 +531,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(
                           children: [
                             Row(children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
+                              const Padding(
+                                padding: EdgeInsets.only(top: 10.0),
                                 child: Text(
                                   " Blood Pressure ",
                                   style: TextStyle(
@@ -543,13 +543,13 @@ class _ProfilePageState extends State<ProfilePage> {
                               Container(
                                   // width: 60,
                                   //height: 20,
-                                  margin: EdgeInsets.only(top: 6.0),
+                                  margin: const EdgeInsets.only(top: 6.0),
                                   child: Image.asset(
                                     'assets/pressure.png',
                                     fit: BoxFit.cover,
                                   ))
                             ]),
-                            Row(
+                            const Row(
                               children: [
                                 Text("  128     ",
                                     style: TextStyle(
@@ -558,7 +558,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Text("  sys\nmmHg")
                               ],
                             ),
-                            Row(
+                            const Row(
                               children: [
                                 Text("   65      ",
                                     style: TextStyle(
@@ -579,12 +579,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(children: [
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 "  Active        ",
                                 style: TextStyle(
                                     fontSize: 23, fontWeight: FontWeight.bold),
                               ),
-                              Container(
+                              SizedBox(
                                   height: 40,
                                   width: 50,
                                   child: Image.asset('assets/active1.png')),
@@ -608,14 +608,14 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: Container(
                                 width: 80.0,
                                 height: 80.0,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: Colors.white,
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text("18h 15 mins"),
+                                    const Text("18h 15 mins"),
                                     Image.asset(
                                       'assets/active2.png',
                                       height: 20.0,
@@ -627,7 +627,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           )
                         ]),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                         width: 40,
                       )
