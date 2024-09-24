@@ -70,8 +70,8 @@ class _LoginPageState extends State<LoginPage> {
         await prefs.setString('user_id', userId);
         await prefs.setBool('islogin', true);
         if (user == "Admin"){
-          final String gymId = responseData['gym_id'];
-          await prefs.setString('gym_id', gymId);
+          final String? gymId = responseData['gym_id'];
+          await prefs.setString('gym_id', gymId ?? "null");
           await prefs.setString('user', "admin");
         }
         else {
@@ -82,11 +82,6 @@ class _LoginPageState extends State<LoginPage> {
           context,
           MaterialPageRoute(builder: (context) => WorkoutHomePage()),
         );
-        // Login successful
-        /* Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => WorkoutHomePage()),
-          );*/
       } else {
         print('hi');
         // Login failed

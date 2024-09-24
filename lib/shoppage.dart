@@ -1,7 +1,11 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -32,7 +36,6 @@ class _ShopPageState extends State<ShopPage> {
     });
   }
 
-  // Fetch data from API with error handling and timeout
   Future<void> fetchProducts() async {
     try {
       var url = 'https://gym-management-2.onrender.com/products/';
@@ -43,8 +46,8 @@ class _ShopPageState extends State<ShopPage> {
         var data = json.decode(response.body);
         setState(() {
           products = data;
-          filteredProducts = products; // Initialize filteredProducts with all products
-          isLoading = false; // Data fetched, hide the loading indicator
+          filteredProducts = products;
+          isLoading = false;
         });
       } else {
         setState(() {
@@ -52,11 +55,6 @@ class _ShopPageState extends State<ShopPage> {
         });
         _showErrorMessage('Failed to load products: ${response.statusCode}');
       }
-    } on http.ClientException catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      _showErrorMessage('Client error: $e');
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -65,14 +63,12 @@ class _ShopPageState extends State<ShopPage> {
     }
   }
 
-  // Show error message
   void _showErrorMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
   }
 
-  // Filter products based on the search query
   void filterProducts(String query) {
     List<dynamic> filtered = products.where((product) {
       final productName = product['name'].toLowerCase();
@@ -85,30 +81,33 @@ class _ShopPageState extends State<ShopPage> {
     });
   }
 
-  // Create a new product
   Future<void> createProduct(String name, String price, String desc,
-      String image, int stock, String reviews) async {
+      File image, int stock, String reviews, String type) async {
     if (userRole != 'admin') {
       _showErrorMessage('You do not have permission to create products.');
       return;
     }
     try {
       var url = 'https://gym-management-2.onrender.com/products/';
-      var response = await http.post(
-        Uri.parse(url),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode({
-          'name': name,
-          'price': price,
-          'desc': desc,
-          'image': image,
-          'stock': stock,
-          'reviews': reviews,
-        }),
-      );
+      SharedPreferences prefs = await SharedPreferences.getInstance();
 
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      request.fields['name'] = name;
+      request.fields['price'] = price;
+      request.fields['type'] = type;
+      request.fields['desc'] = desc;
+      request.fields['stock'] = stock.toString();
+      request.fields['reviews'] = reviews;
+      request.fields['gym_id'] = prefs.getString('gym_id') ?? '';
+      request.fields['admin'] = prefs.getString('user_id') ?? '';
+
+      var pic = await http.MultipartFile.fromPath('image', image.path);
+      request.files.add(pic);
+
+      var response = await request.send();
       if (response.statusCode == 201) {
-        fetchProducts(); // Fetch updated products list
+        fetchProducts();
       } else {
         _showErrorMessage('Failed to create product: ${response.statusCode}');
       }
@@ -117,19 +116,30 @@ class _ShopPageState extends State<ShopPage> {
     }
   }
 
-  // Delete a product
   Future<void> deleteProduct(String productId) async {
     if (userRole != 'admin') {
       _showErrorMessage('You do not have permission to delete products.');
       return;
     }
     try {
-      var url = 'https://gym-management-2.onrender.com/products/$productId';
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Get the required query parameters
+      String adminId = prefs.getString('user_id') ?? '';
+      String gymId = prefs.getString('gym_id') ?? '';
+
+      // Construct the URL with query parameters
+      var url =
+          'https://gym-management-2.onrender.com/products/?admin=$adminId&gym_id=$gymId&product_id=$productId';
+
+      // Make the DELETE request
       var response = await http.delete(Uri.parse(url));
 
-      if (response.statusCode == 200) {
+      // Handle the response
+      if (response.statusCode == 204) {
         fetchProducts(); // Fetch updated products list
       } else {
+        print(response.body);
         _showErrorMessage('Failed to delete product: ${response.statusCode}');
       }
     } catch (e) {
@@ -137,30 +147,48 @@ class _ShopPageState extends State<ShopPage> {
     }
   }
 
-  // Update a product
+
   Future<void> updateProduct(String productId, String name, String price,
-      String desc, String image, int stock, String reviews) async {
+      String desc, File? image, int stock, String reviews, String type) async {
     if (userRole != 'admin') {
       _showErrorMessage('You do not have permission to update products.');
       return;
     }
     try {
-      var url = 'https://gym-management-2.onrender.com/products/$productId';
-      var response = await http.put(
-        Uri.parse(url),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode({
-          'name': name,
-          'price': price,
-          'desc': desc,
-          'image': image,
-          'stock': stock,
-          'reviews': reviews,
-        }),
-      );
+      var url = 'https://gym-management-2.onrender.com/products/';
+      SharedPreferences prefs = await SharedPreferences.getInstance();
 
+      // Create a Multipart request for updating product (using PUT method)
+      var request = http.MultipartRequest('PUT', Uri.parse(url));
+
+      // Add the necessary fields (as required by the API)
+      request.fields['stock'] = stock.toString();
+      request.fields['admin'] = prefs.getString('user_id') ?? ''; // Admin ID
+      request.fields['gym_id'] = prefs.getString('gym_id') ?? ''; // Gym ID
+      request.fields['product_id'] = productId;  // Product ID for updating
+
+      // Optionally include fields like name, price, type, desc if needed
+      // request.fields['name'] = name;
+      // request.fields['price'] = price;
+      // request.fields['type'] = type;
+      // request.fields['desc'] = desc;
+      // request.fields['reviews'] = reviews;
+      //
+      // // Add image file if provided (optional)
+      // if (image != null) {
+      //   var pic = await http.MultipartFile.fromPath('image', image.path);
+      //   request.files.add(pic);
+      // }
+
+      // Send the request
+      var response = await request.send();
+
+      // Debugging: print the fields being sent
+      print(request.fields);
+
+      // Handle response
       if (response.statusCode == 200) {
-        fetchProducts(); // Fetch updated products list
+        fetchProducts();  // Refresh the product list if update succeeds
       } else {
         _showErrorMessage('Failed to update product: ${response.statusCode}');
       }
@@ -213,7 +241,6 @@ class _ShopPageState extends State<ShopPage> {
               onChanged: filterProducts,
             ),
             SizedBox(height: screenHeight * 0.02),
-
             if (userRole == 'admin') ...[
               ElevatedButton(
                 onPressed: () {
@@ -221,8 +248,8 @@ class _ShopPageState extends State<ShopPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => CreateProductPage(
-                        onCreate: (name, price, desc, image, stock, reviews) {
-                          createProduct(name, price, desc, image, stock, reviews);
+                        onCreate: (name, price, desc, image, stock, reviews, type) {
+                          createProduct(name, price, desc, image, stock, reviews, type);
                         },
                       ),
                     ),
@@ -231,7 +258,6 @@ class _ShopPageState extends State<ShopPage> {
                 child: const Text('Create New Product'),
               ),
             ],
-
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -281,7 +307,7 @@ class _ShopPageState extends State<ShopPage> {
                 borderRadius: BorderRadius.circular(screenWidth * 0.05),
               ),
               image: DecorationImage(
-                image: NetworkImage(product['image']),
+                image: NetworkImage('https://gym-management-2.onrender.com/products/' + product['image']),
                 fit: BoxFit.contain,
               ),
             ),
@@ -319,7 +345,7 @@ class _ShopPageState extends State<ShopPage> {
                     IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () {
-                        deleteProduct(product['_id']);
+                        deleteProduct(product['id']);
                       },
                     ),
                     IconButton(
@@ -330,8 +356,8 @@ class _ShopPageState extends State<ShopPage> {
                           MaterialPageRoute(
                             builder: (context) => UpdateProductPage(
                               product: product,
-                              onUpdate: (id, name, price, desc, image, stock, reviews) {
-                                updateProduct(id, name, price, desc, image, stock, reviews);
+                              onUpdate: (id, name, price, desc, image, stock, reviews, type) {
+                                updateProduct(id, name, price, desc, image, stock, reviews, type);
                               },
                             ),
                           ),
@@ -349,18 +375,35 @@ class _ShopPageState extends State<ShopPage> {
   }
 }
 
-// CreateProductPage to input product details
-class CreateProductPage extends StatelessWidget {
-  final Function(String, String, String, String, int, String) onCreate;
+class CreateProductPage extends StatefulWidget {
+  final Function(String, String, String, File, int, String, String) onCreate;
 
-  CreateProductPage({super.key, required this.onCreate});
+  const CreateProductPage({Key? key, required this.onCreate}) : super(key: key);
 
+  @override
+  _CreateProductPageState createState() => _CreateProductPageState();
+}
+
+class _CreateProductPageState extends State<CreateProductPage> {
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController typeController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descController = TextEditingController();
-  final TextEditingController imageController = TextEditingController();
   final TextEditingController stockController = TextEditingController();
   final TextEditingController reviewsController = TextEditingController();
+
+  File? _image;
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -368,13 +411,17 @@ class CreateProductPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Create New Product'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: nameController,
               decoration: const InputDecoration(labelText: 'Product Name'),
+            ),
+            TextField(
+              controller: typeController,
+              decoration: const InputDecoration(labelText: 'Type'),
             ),
             TextField(
               controller: priceController,
@@ -384,10 +431,6 @@ class CreateProductPage extends StatelessWidget {
             TextField(
               controller: descController,
               decoration: const InputDecoration(labelText: 'Description'),
-            ),
-            TextField(
-              controller: imageController,
-              decoration: const InputDecoration(labelText: 'Image URL'),
             ),
             TextField(
               controller: stockController,
@@ -400,16 +443,31 @@ class CreateProductPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
+              onPressed: getImage,
+              child: const Text('Pick Image'),
+            ),
+            _image == null
+                ? const Text('No image selected.')
+                : Image.file(_image!),
+            const SizedBox(height: 20),
+            ElevatedButton(
               onPressed: () {
-                onCreate(
-                  nameController.text,
-                  priceController.text,
-                  descController.text,
-                  imageController.text,
-                  int.parse(stockController.text),
-                  reviewsController.text,
-                );
-                Navigator.pop(context); // Close the form after submission
+                if (_image != null) {
+                  widget.onCreate(
+                    nameController.text,
+                    priceController.text,
+                    descController.text,
+                    _image!,
+                    int.parse(stockController.text),
+                    reviewsController.text,
+                    typeController.text,
+                  );
+                  Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please select an image')),
+                  );
+                }
               },
               child: const Text('Create Product'),
             ),
@@ -420,41 +478,66 @@ class CreateProductPage extends StatelessWidget {
   }
 }
 
-// Product Detail Page
 
-class UpdateProductPage extends StatelessWidget {
+class UpdateProductPage extends StatefulWidget {
   final Map<String, dynamic> product;
-  final Function(String, String, String, String, String, int, String) onUpdate;
+  final Function(String, String, String, String, File?, int, String, String) onUpdate;
 
-  UpdateProductPage({super.key, required this.product, required this.onUpdate});
+  const UpdateProductPage({Key? key, required this.product, required this.onUpdate}) : super(key: key);
 
+  @override
+  _UpdateProductPageState createState() => _UpdateProductPageState();
+}
+
+class _UpdateProductPageState extends State<UpdateProductPage> {
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController typeController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descController = TextEditingController();
-  final TextEditingController imageController = TextEditingController();
   final TextEditingController stockController = TextEditingController();
   final TextEditingController reviewsController = TextEditingController();
 
+  File? _image;
+  final picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = widget.product['name']?.toString() ?? '';
+    typeController.text = widget.product['type']?.toString() ?? '';
+    priceController.text = widget.product['price']?.toString() ?? '';
+    descController.text = widget.product['desc']?.toString() ?? '';
+    stockController.text = widget.product['stock']?.toString() ?? '';
+    reviewsController.text = widget.product['reviews']?.toString() ?? '';
+  }
+
+  Future<void> getImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    nameController.text = product['name'];
-    priceController.text = product['price'].toString();
-    descController.text = product['desc'];
-    imageController.text = product['image'];
-    stockController.text = product['stock'].toString();
-    reviewsController.text = product['reviews'];
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Update Product'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: nameController,
               decoration: const InputDecoration(labelText: 'Product Name'),
+            ),
+            TextField(
+              controller: typeController,
+              decoration: const InputDecoration(labelText: 'Type'),
             ),
             TextField(
               controller: priceController,
@@ -464,10 +547,6 @@ class UpdateProductPage extends StatelessWidget {
             TextField(
               controller: descController,
               decoration: const InputDecoration(labelText: 'Description'),
-            ),
-            TextField(
-              controller: imageController,
-              decoration: const InputDecoration(labelText: 'Image URL'),
             ),
             TextField(
               controller: stockController,
@@ -480,15 +559,46 @@ class UpdateProductPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
+              onPressed: getImage,
+              child: const Text('Pick Image'),
+            ),
+            _image != null
+                ? Image.file(_image!)
+                : (widget.product['image'] != null
+                ? Image.network('https://gym-management-2.onrender.com/products/${widget.product['image']}')
+                : const Text('No image available')),
+            const SizedBox(height: 20),
+            ElevatedButton(
               onPressed: () {
-                onUpdate(
-                  product['_id'],
+                if (nameController.text.isEmpty ||
+                    priceController.text.isEmpty ||
+                    stockController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please fill all required fields')),
+                  );
+                  return;
+                }
+
+                // Ensure the '_id' field is not null
+                final productId = widget.product['id']?.toString() ?? '';
+                print(productId);
+
+                if (productId.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Product ID is missing')),
+                  );
+                  return;
+                }
+
+                widget.onUpdate(
+                  productId,
                   nameController.text,
                   priceController.text,
                   descController.text,
-                  imageController.text,
-                  int.parse(stockController.text),
+                  _image,
+                  int.tryParse(stockController.text) ?? 0,
                   reviewsController.text,
+                  typeController.text,
                 );
                 Navigator.pop(context);
               },
@@ -501,11 +611,12 @@ class UpdateProductPage extends StatelessWidget {
   }
 }
 
+
 class ProductDetailPage extends StatelessWidget {
   final Map<String, dynamic> product;
   final String userRole;
 
-  const ProductDetailPage({super.key, required this.product, required this.userRole});
+  const ProductDetailPage({Key? key, required this.product, required this.userRole}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -518,7 +629,7 @@ class ProductDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(product['image']),
+            Image.network('https://gym-management-2.onrender.com/products/${product['image']}'),
             const SizedBox(height: 16.0),
             Text(
               product['desc'],
@@ -538,6 +649,9 @@ class ProductDetailPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // Implement add to cart functionality
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Added to cart')),
+                  );
                 },
                 child: const Text('Add to Cart'),
               ),
@@ -548,4 +662,3 @@ class ProductDetailPage extends StatelessWidget {
     );
   }
 }
-
