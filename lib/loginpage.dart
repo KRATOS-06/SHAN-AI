@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_management/adminsigninpage.dart';
 import 'package:gym_management/homepage.dart';
+import 'package:gym_management/forgot_password_page.dart';
 import 'package:gym_management/signinpage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -294,7 +295,12 @@ class _LoginPageState extends State<LoginPage> {
                   top: screenSize.height * 0.70,
                   left: screenSize.width * 0.56,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                      );
+                    },
                     child: Text(
                       " Forget Password?",
                       style: TextStyle(

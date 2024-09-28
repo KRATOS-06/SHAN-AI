@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:gym_management/loginpage.dart';
+import 'package:gym_management/gym_details_page.dart';
+
 class GymPage extends StatefulWidget {
   const GymPage({super.key});
 
@@ -61,70 +63,58 @@ class _GymPageState extends State<GymPage> {
   }
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF00B2B2),
-          elevation: 0,
-          title: Text("GYMS"),
-          actions: [
-            Padding(
-              padding: EdgeInsets.all(screenWidth * 0.013),
-              child: Image.asset(
-                'assets/gym_logo.png',
-                width: screenWidth * 0.2,
-                height: screenHeight * 0.08,
-                fit: BoxFit.cover,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF00B2B2),
+        elevation: 0,
+        title: Text("GYMS"),
+        actions: [
+          Padding(
+            padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.013),
+            child: Image.asset(
+              'assets/gym_logo.png',
+              width: MediaQuery.of(context).size.width * 0.2,
+              height: MediaQuery.of(context).size.height * 0.08,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: const Color(0xFF00B2B2),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if ((userRole == 'admin' || userRole == 'mentor') && (gymId == 'null' || gymId == ''))
+                    Center(child: _buildAddStoryButton(context, constraints)),
+                  SizedBox(height: constraints.maxHeight * 0.02),
+                  isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: gymList.length,
+                    itemBuilder: (context, index) {
+                      final gym = gymList[index];
+                      return _buildWorkoutCard(context, gym, constraints);
+                    },
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-        backgroundColor: const Color(0xFF00B2B2),
-        body:LayoutBuilder(
-            builder: (context, constraints){
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      //SizedBox(height: constraints.maxHeight * 0.02),
-
-                      if ((userRole == 'admin' || userRole == 'mentor') && (gymId=='null' || gymId==''))
-                        Center(child: _buildAddStoryButton(context,constraints)),
-                      SizedBox(height: constraints.maxHeight * 0.02),
-                      isLoading
-                          ? Center(child: CircularProgressIndicator())
-                          : ListView.builder(
-                        shrinkWrap: true, // To avoid unbounded height errors inside SingleChildScrollView
-                        physics: NeverScrollableScrollPhysics(), // To prevent scrolling conflicts with SingleChildScrollView
-                        itemCount: gymList.length,
-                        itemBuilder: (context, index) {
-                          final gym = gymList[index];
-                          return _buildWorkoutCard(
-                              gym['gym_name'],              // Pass gym name
-                              gym['gym_email'],             // Pass gym email
-                              gym['gym_phone_number'] ?? 'No phone',constraints // Pass phone number or default value
-                          );
-                        },
-                      ),
-
-
-
-                    ],
-                  ),
-                ),
-              );
-            }
-        )
-
+          );
+        },
+      ),
     );
   }
 }
-Widget _buildWorkoutCard(String gymName, String gymEmail, String gymPhone, BoxConstraints constraints) {
+Widget _buildWorkoutCard(BuildContext context, Map<String, dynamic> gym, BoxConstraints constraints) {
   return Padding(
-    padding:  EdgeInsets.only(top:constraints.maxHeight * 0.01),
+    padding: EdgeInsets.only(top: constraints.maxHeight * 0.01),
     child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -135,7 +125,7 @@ Widget _buildWorkoutCard(String gymName, String gymEmail, String gymPhone, BoxCo
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            gymName, // Display gym name
+            gym['gym_name'],
             style: TextStyle(
               fontSize: constraints.maxWidth * 0.05,
               fontWeight: FontWeight.bold,
@@ -143,7 +133,7 @@ Widget _buildWorkoutCard(String gymName, String gymEmail, String gymPhone, BoxCo
           ),
           SizedBox(height: constraints.maxHeight * 0.01),
           Text(
-            'Email: $gymEmail', // Display gym email
+            'Email: ${gym['gym_email']}',
             style: TextStyle(
               fontSize: constraints.maxWidth * 0.04,
               color: Colors.grey,
@@ -151,7 +141,7 @@ Widget _buildWorkoutCard(String gymName, String gymEmail, String gymPhone, BoxCo
           ),
           SizedBox(height: constraints.maxHeight * 0.01),
           Text(
-            'Phone: $gymPhone', // Display gym phone
+            'Phone: ${gym['gym_phone_number'] ?? 'No phone'}',
             style: TextStyle(
               fontSize: constraints.maxWidth * 0.04,
               color: Colors.grey,
@@ -160,7 +150,12 @@ Widget _buildWorkoutCard(String gymName, String gymEmail, String gymPhone, BoxCo
           SizedBox(height: constraints.maxHeight * 0.02),
           ElevatedButton(
             onPressed: () {
-              // Action for "Join us"
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GymDetailsPage(gymDetails: gym),
+                ),
+              );
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -176,10 +171,8 @@ Widget _buildWorkoutCard(String gymName, String gymEmail, String gymPhone, BoxCo
           SizedBox(height: constraints.maxHeight * 0.02),
         ],
       ),
-
     ),
   );
-
 }
 
 Widget _buildAddStoryButton(BuildContext context,BoxConstraints constraints) {

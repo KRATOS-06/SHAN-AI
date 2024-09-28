@@ -11,6 +11,7 @@ import 'package:gym_management/mentorpage.dart';
 import 'package:gym_management/loginpage.dart';
 
 class Event {
+  final String id;
   final String name;
   final String date;
   final String timing;
@@ -21,6 +22,7 @@ class Event {
   final String adminId;
 
   Event({
+    required this.id,
     required this.name,
     required this.date,
     required this.timing,
@@ -31,20 +33,25 @@ class Event {
     required this.adminId,
   });
 
-  factory Event.fromJson(Map<String, dynamic> json) {
+
+  static Future<Event> fromJsonWithPreferences(Map<String, dynamic> json) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String gymId = prefs.getString('gym_id') ?? '';
+    String adminId = prefs.getString('user_id') ?? '';
+
     return Event(
-      name: json['name'],
-      date: json['date'],
-      timing: json['timing'],
-      location: json['location'],
-      description: json['description'],
-      guestName: json['Guest_name'],
-      gymId: json['gym_id'],
-      adminId: json['admin_id'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      date: json['date'] ?? '',
+      timing: json['timing'] ?? '',
+      location: json['location'] ?? '',
+      description: json['description'] ?? '',
+      guestName: json['Guest_name'] ?? '',
+      gymId: gymId,
+      adminId: adminId,
     );
   }
 }
-
 class WorkoutHomePage extends StatefulWidget {
   const WorkoutHomePage({Key? key}) : super(key: key);
 
@@ -81,11 +88,14 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
         Uri.parse('https://gym-management-2.onrender.com/events/events/'),
         headers: {'accept': 'application/json'},
       );
-
+      print(response.statusCode);
       if (response.statusCode == 200) {
         final List<dynamic> eventsJson = jsonDecode(response.body);
+        List<Event> events = await Future.wait(
+          eventsJson.map((json) => Event.fromJsonWithPreferences(json)).toList(),
+        );
         setState(() {
-          events = eventsJson.map((json) => Event.fromJson(json)).toList();
+          this.events = events;
           isLoading = false;
         });
       } else {
@@ -608,7 +618,11 @@ class _AddEventPageState extends State<AddEventPage> {
 
         if (response.statusCode == 201) {
           // Successfully created
+          final responseJson = jsonDecode(response.body);
+          final String eventId = responseJson['id']; // Extract the event ID from the response
+
           final newEvent = Event(
+            id: eventId, // Assign the event ID
             name: name,
             date: date,
             timing: timing,
@@ -729,7 +743,7 @@ class EventDetailsPage extends StatelessWidget {
   const EventDetailsPage({Key? key, required this.event, required this.userRole}) : super(key: key);
 
   Future<void> _deleteEvent(BuildContext context) async {
-    final url = Uri.parse('https://gym-management-2.onrender.com/events/events/${event.gymId}/');
+    final url = Uri.parse('https://gym-management-2.onrender.com/events/events/${event.id}/');
 
     try {
       final response = await http.delete(
@@ -741,7 +755,7 @@ class EventDetailsPage extends StatelessWidget {
           'admin_id': event.adminId,
         }),
       );
-
+      print(response.statusCode);
       if (response.statusCode == 204) {
         // Successfully deleted
         ScaffoldMessenger.of(context).showSnackBar(
@@ -749,6 +763,10 @@ class EventDetailsPage extends StatelessWidget {
         );
         Navigator.pop(context); // Go back to the previous page
       } else {
+        print(event.id);
+        print(event.adminId);
+        print(event.gymId);
+
         // If the server did not return a 204 NO CONTENT response,
         // throw an exception.
         throw Exception('Failed to delete event');
@@ -794,7 +812,17 @@ class EventDetailsPage extends StatelessWidget {
                   ElevatedButton(
                     child: const Text('Edit Event'),
                     onPressed: () {
-                      // Implement edit event functionality
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditEventPage(
+                            event: event, // Assuming 'event' is the current event object
+                            onEventUpdated: (updatedEvent) {
+                              Navigator.pop(context); // Go back to the previous screen
+                            },
+                          ),
+                        ),
+                      );
                     },
                   ),
                   ElevatedButton(
@@ -805,6 +833,190 @@ class EventDetailsPage extends StatelessWidget {
               ),
             ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class EditEventPage extends StatefulWidget {
+  final Event event;
+  final Function(Event) onEventUpdated;
+
+  const EditEventPage({Key? key, required this.event, required this.onEventUpdated}) : super(key: key);
+
+  @override
+  _EditEventPageState createState() => _EditEventPageState();
+}
+
+class _EditEventPageState extends State<EditEventPage> {
+  final _formKey = GlobalKey<FormState>();
+  late String name;
+  late String date;
+  late String timing;
+  late String location;
+  late String description;
+  late String guestName;
+  late String gymId;
+  late String adminId;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the form fields with the existing event data
+    name = widget.event.name;
+    date = widget.event.date;
+    timing = widget.event.timing;
+    location = widget.event.location;
+    description = widget.event.description;
+    guestName = widget.event.guestName;
+    gymId = widget.event.gymId;
+    adminId = widget.event.adminId;
+  }
+
+  Future<void> _submitEvent() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      final url = Uri.parse('https://gym-management-2.onrender.com/events/update-event/');
+
+      try {
+        final response = await http.put(
+          url,
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, dynamic>{
+            'event_id': widget.event.id,
+            'name': name,
+            'date': date,
+            'timing': timing,
+            'location': location,
+            'description': description,
+            'gym_id': gymId,
+            'admin_id': adminId,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          // Successfully updated
+          final updatedEvent = Event(
+            id: widget.event.id,
+            name: name,
+            date: date,
+            timing: timing,
+            location: location,
+            description: description,
+            guestName: guestName,
+            gymId: gymId,
+            adminId: adminId,
+          );
+          widget.onEventUpdated(updatedEvent);
+          print("ok");
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const WorkoutHomePage()));
+        } else {
+          // If the server did not return a 200 OK response,
+          // throw an exception.
+          throw Exception('Failed to update event');
+        }
+      } catch (e) {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating event: $e')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Edit Event'),
+        backgroundColor: const Color(0xFF00B2B2),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                initialValue: name,
+                decoration: const InputDecoration(labelText: 'Event Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter event name';
+                  }
+                  return null;
+                },
+                onSaved: (value) => name = value!,
+              ),
+              TextFormField(
+                initialValue: date,
+                decoration: const InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter date';
+                  }
+                  return null;
+                },
+                onSaved: (value) => date = value!,
+              ),
+              TextFormField(
+                initialValue: timing,
+                decoration: const InputDecoration(labelText: 'Timing'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter timing';
+                  }
+                  return null;
+                },
+                onSaved: (value) => timing = value!,
+              ),
+              TextFormField(
+                initialValue: location,
+                decoration: const InputDecoration(labelText: 'Location'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter location';
+                  }
+                  return null;
+                },
+                onSaved: (value) => location = value!,
+              ),
+              TextFormField(
+                initialValue: description,
+                decoration: const InputDecoration(labelText: 'Description'),
+                maxLines: 3,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter description';
+                  }
+                  return null;
+                },
+                onSaved: (value) => description = value!,
+              ),
+              TextFormField(
+                initialValue: guestName,
+                decoration: const InputDecoration(labelText: 'Guest Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter guest name';
+                  }
+                  return null;
+                },
+                onSaved: (value) => guestName = value!,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                child: const Text('Update Event'),
+                onPressed: _submitEvent,
+              ),
+            ],
+          ),
         ),
       ),
     );
