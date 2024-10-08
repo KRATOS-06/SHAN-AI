@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_management/adminsigninpage.dart';
 import 'package:gym_management/homepage.dart';
-import 'package:gym_management/forgot_password_page.dart';
 import 'package:gym_management/signinpage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -29,16 +28,16 @@ class _LoginPageState extends State<LoginPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print(user);
     Uri url;
+
+    // Login URLs based on user type
     if (user == "Admin") {
-      url = Uri.parse(
-          'https://gym-management-2.onrender.com/accounts/admin_login');
+      url = Uri.parse('https://gym-management-2.onrender.com/accounts/admin_login');
     } else if (user == "SuperUser") {
-      url = Uri.parse(
-          'https://gym-management-2.onrender.com/accounts/superlogin/');
+      url = Uri.parse('https://gym-management-2.onrender.com/accounts/superlogin/');
     } else {
-      url = Uri.parse(
-          'https://gym-management-2.onrender.com/accounts/user_login');
+      url = Uri.parse('https://gym-management-2.onrender.com/accounts/user_login');
     }
+
     try {
       final response = await http.post(
         url,
@@ -52,31 +51,58 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       final Map<String, dynamic> responseData = json.decode(response.body);
-      final String userId = responseData['user_id'];
+      final String userId = responseData['user_id'] as String? ?? '';
+      final String gymId = responseData['gym_id'] as String? ?? '';
 
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
+
+
       if (response.statusCode == 200 && user == "SuperUser") {
-        // Login successful
+        // SuperUser login
         await prefs.setString('user', "superuser");
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-              builder: (context) => AdminSignInPage(userid: userId)),
+          MaterialPageRoute(builder: (context) => AdminSignInPage(userid: userId)),
         );
-      } else if (response.statusCode == 200 &&
-          (user == "Admin" || user == "User")) {
-        print('hi');
-
+      } else if (response.statusCode == 200 && (user == "Admin" || user == "User")) {
         await prefs.setString('user_id', userId);
+        await prefs.setString('gym_id', gymId ?? "");
         await prefs.setBool('islogin', true);
-        if (user == "Admin"){
-          final String? gymId = responseData['gym_id'];
-          await prefs.setString('gym_id', gymId ?? "null");
-          await prefs.setString('user', "admin");
-        }
-        else {
-          await prefs.setString('user', "user");
+
+        if (user == "User")
+          // Fetch admin details
+         {
+          // Fetch user details
+          final userResponse = await http.get(
+            Uri.parse('https://gym-management-2.onrender.com/accounts/user_register?id=$userId'),
+          );
+          print(userResponse.statusCode);
+          print(userResponse.body);
+          if (userResponse.statusCode == 200) {
+            final Map<String, dynamic> userData = json.decode(userResponse.body);
+            // Handle user details if needed
+            final String userName = userData['username']?.toString() ?? 'Unknown';
+            final String userFirstName = userData['first_name']?.toString() ?? 'Unknown';
+            final String userLastName = userData['last_name']?.toString() ?? 'Unknown';
+            final String userAddress = userData['address']?.toString() ?? 'Unknown';
+            final String userPincode = userData['pincode']?.toString() ?? 'Unknown';
+            final String userPhone = userData['phone_number']?.toString() ?? 'Unknown';
+            final String userCountry = userData['country']?.toString() ?? 'Unknown';
+
+            // Storing user details in SharedPreferences
+            await prefs.setString('user', "user");
+            await prefs.setString('name', userName);
+            await prefs.setString('first_name', userFirstName ?? "");
+            await prefs.setString('last_name', userLastName ?? "");
+            await prefs.setString('address', userAddress ?? "");
+            await prefs.setString('pincode', userPincode ?? "");
+            await prefs.setString('phone', userPhone ?? "");
+            await prefs.setString('country', userCountry ?? "");
+
+          } else {
+            print('Failed to fetch user details');
+          }
         }
 
         Navigator.pushReplacement(
@@ -84,9 +110,7 @@ class _LoginPageState extends State<LoginPage> {
           MaterialPageRoute(builder: (context) => WorkoutHomePage()),
         );
       } else {
-        print('hi');
         // Login failed
-        final Map<String, dynamic> responseData = json.decode(response.body);
         final errorMessage = responseData['message'] ?? 'Unknown error';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login failed: $errorMessage')),
@@ -295,12 +319,7 @@ class _LoginPageState extends State<LoginPage> {
                   top: screenSize.height * 0.70,
                   left: screenSize.width * 0.56,
                   child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
-                      );
-                    },
+                    onPressed: () {},
                     child: Text(
                       " Forget Password?",
                       style: TextStyle(
@@ -309,36 +328,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
 
-                  /* Row(
-                    children: [
-                     /* Transform.scale(
-                        scale: screenSize.width * 0.005,
-                        child: Checkbox(
-                          value: checked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              checked = value ?? false;
-                            });
-                          },
-                        ),
-                      ),*/
-                      /*  Text(
-                        "keep logged in",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: screenSize.width * 0.045),
-                      ),*/
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          "                                              Forget Password?",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: screenSize.width * 0.045),
-                        ),
-                      ),
-                    ],
-                  ),*/
+
                 ),
                 Positioned(
                   top: screenSize.height * 0.77,

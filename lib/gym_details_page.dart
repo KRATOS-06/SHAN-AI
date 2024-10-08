@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:gym_management/paymentpage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gym_management/mentorsigninpage.dart';
 import 'package:gym_management/newPlanPage.dart';
 import 'package:gym_management/editPlanPage.dart';
-
+import 'package:webview_flutter/webview_flutter.dart';
 class GymDetailsPage extends StatelessWidget {
   final Map<String, dynamic> gymDetails;
+
 
   const GymDetailsPage({Key? key, required this.gymDetails}) : super(key: key);
 
@@ -65,7 +67,7 @@ class GymDetailsPage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PlansPage(),
+                              builder: (context) => PlansPage(GymId:gymDetails['id'].toString()),
                             ),
                           );
                         },
@@ -220,10 +222,70 @@ class _MentorPageState extends State<MentorPage> {
     );
   }
 }
+class PaymentService {
+  final String baseUrl = 'https://gym-management-2.onrender.com/payment/';
+
+  Future<Map<String, dynamic>> makePayment({
+    required String username,
+    required String firstName,
+    required String lastName,
+    required String gymId,
+    required String productType,
+    required String stripePriceId,
+    required String userId,
+    required String promoCode,
+    required String productId,
+    required String address,
+    required String phoneNumber,
+    required String country,
+    required String pinCode,
+    required String paymentType,
+  }) async {
+    try {
+      final url = Uri.parse(baseUrl);
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+
+      final body = jsonEncode({
+        'username': username,
+        'first_name': firstName,
+        'last_name': lastName,
+        'gym_id': gymId,
+        'product_type': productType,
+        'stripe_price_id': stripePriceId,
+        'user_id': userId,
+        'promo_code': promoCode,
+        'product_id': productId,
+        'address': address,
+        'phone_number': phoneNumber,
+        'country': country,
+        'pin_code': pinCode,
+        'payment_type': paymentType,
+      });
+
+      final response = await http.post(url, headers: headers, body: body);
+      print('Request Body: $body'); // Log request body
+      print('Response Body: ${response.body}'); // Log response body
+      print('Status Code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        print(data);
+        return data;
+      } else {
+        return {'error': 'Failed to process payment. Please try again.'};
+      }
+    } catch (e) {
+      return {'error': 'An error occurred: $e'};
+    }
+  }
+}
 
 
 class PlansPage extends StatefulWidget {
-  const PlansPage({Key? key}) : super(key: key);
+  final String GymId;
+  const PlansPage({Key? key, required this.GymId}) : super(key: key);
 
   @override
   _PlansPageState createState() => _PlansPageState();
@@ -233,40 +295,73 @@ class _PlansPageState extends State<PlansPage> {
   List<dynamic> subscriptions = [];
   bool isLoading = true;
   String errorMessage = '';
-  String? gymId;
+  String gymId = '';
   String? userId;  // To identify admin
   bool isAdmin = false; // To track if the user is admin
+  String userRole = 'user'; // Default role
+  String firstName = '';
+  String lastName = '';
+  String username = '';
+  String phoneNumber = '';
+  String country = '';
+  String address = '';
+  String pincode = '';
+  final PaymentService _paymentService = PaymentService();
+  String responseMessage = '';
+  String sessionUrl = '';
 
   @override
   void initState() {
     super.initState();
+    gymId = widget.GymId;
     fetchGymIdAndSubscriptions();
+    loadUserDetails();
+    _loadUserRole();
+  }
+
+  Future<void> loadUserDetails() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      firstName = prefs.getString('name') ?? '';
+      lastName = prefs.getString('last_name') ?? '';
+      username = prefs.getString('name') ?? '';
+      phoneNumber = prefs.getString('phone') ?? '';
+      country = prefs.getString('country') ?? '';
+      address = prefs.getString('address') ?? '';
+      pincode = prefs.getString('pincode') ?? '';
+      userRole = prefs.getString('user') ?? 'user';
+      isLoading = false; // Once user details are loaded
+    });
+  }
+
+  Future<void> _loadUserRole() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userRole = prefs.getString('user') ?? 'user';
+      isAdmin = userRole == 'admin';
+    });
   }
 
   Future<void> fetchGymIdAndSubscriptions() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? user =prefs.getString('user');
     setState(() {
       isLoading = true;
       errorMessage = '';
     });
 
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      gymId = prefs.getString('gym_id') ?? 'null';
       userId = prefs.getString('user_id');  // Get user ID for admin check
-
       if (gymId == null || gymId == 'null') {
         throw Exception('Gym ID not found in SharedPreferences');
       }
 
       // Check if the user is an admin
-      if (user == 'admin') { // Replace with actual admin id check
+      if (prefs.getString('user') == 'admin') {
         isAdmin = true;
       }
 
       final response = await http.get(
-        Uri.parse('https://gym-management-2.onrender.com/subscriptions/?gym_id=$gymId'),
+        Uri.parse('https://gym-management-2.onrender.com/subscriptions/?admin=$userId&gym_id=$gymId'),
         headers: {'accept': 'application/json'},
       );
 
@@ -294,18 +389,6 @@ class _PlansPageState extends State<PlansPage> {
       });
     }
   }
-
-
-  void selectPlan(String planId) {
-    // Logic for selecting a plan
-    print('Selected Plan: $planId');
-  }
-
-  void editPlan(String planId) {
-    // Logic for editing a plan
-    print('Edit Plan: $planId');
-  }
-
   Future<void> deletePlan(String planId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String gymId = prefs.getString('gym_id') ?? '';
@@ -342,6 +425,54 @@ class _PlansPageState extends State<PlansPage> {
     }
   }
 
+  Future<void> processPayment(String planId, String priceId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await _paymentService.makePayment(
+        username: username,
+        firstName: firstName,
+        lastName: lastName,
+        gymId: gymId,
+        productType: 'subscription',
+        stripePriceId: priceId,
+        userId: prefs.getString('user_id') ?? '',
+        promoCode: "12345", // Update promo code if needed
+        productId: planId,
+        address: address,
+        phoneNumber: phoneNumber,
+        country: country,
+        pinCode: pincode,
+        paymentType: "card", // Placeholder for payment method
+      );
+
+      setState(() {
+        isLoading = false;
+
+        if (response.containsKey('error')) {
+          responseMessage = response['error'];
+        } else if (response['sessionUrl'] != null) {
+          sessionUrl = response['sessionUrl'];
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PaymentWebViewPage(sessionUrl: sessionUrl),
+            ),
+          );
+        } else {
+          responseMessage = 'Payment failed. No session URL found.';
+        }
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        responseMessage = 'An error occurred: $e';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -366,6 +497,7 @@ class _PlansPageState extends State<PlansPage> {
           final price = subscription['price']?.toString() ?? 'No price available';
           final interval = subscription['interval'] ?? 'No interval available';
           final planId = subscription['id'] ?? '';
+          final priceId = subscription['stripe_price_id'];
 
           return Card(
             margin: EdgeInsets.all(16),
@@ -407,7 +539,14 @@ class _PlansPageState extends State<PlansPage> {
                   Text('Description: $desc'),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () => selectPlan(planId),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PaymentPage(planId:planId,priceId:priceId,type:"subscription",gymId: gymId,),
+                        ),
+                      );
+                    },
                     child: Text('SELECT PLAN'),
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(double.infinity, 45),
@@ -417,7 +556,7 @@ class _PlansPageState extends State<PlansPage> {
                     SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
-
+                        // Logic to edit plan
                       },
                       child: Text('EDIT PLAN'),
                       style: ElevatedButton.styleFrom(
@@ -439,17 +578,24 @@ class _PlansPageState extends State<PlansPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NewPlanPage(gymId: gymId!),
-            ),
-          );
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Color(0xFF00B2B2),
+    );
+  }
+}
+
+class PaymentWebViewPage extends StatelessWidget {
+  final String sessionUrl;
+
+  const PaymentWebViewPage({Key? key, required this.sessionUrl}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Complete Payment'),
+      ),
+      body: WebView(
+        initialUrl: sessionUrl,
+        javascriptMode: JavascriptMode.unrestricted,
       ),
     );
   }

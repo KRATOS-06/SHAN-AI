@@ -4,7 +4,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:gym_management/paymentpage.dart';
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
 
@@ -19,12 +20,34 @@ class _ShopPageState extends State<ShopPage> {
   bool isLoading = true;
   TextEditingController searchController = TextEditingController();
   String userRole = 'user'; // Default role
+  String firstName = '';
+  String lastName = '';
+  String username = '';
+  String phoneNumber = '';
+  String country = '';
+  String address = '';
+  String pincode = '';
 
   @override
   void initState() {
     super.initState();
     _loadUserRole();
     fetchProducts();
+    loadUserDetails();
+  }
+  Future<void> loadUserDetails() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      firstName = prefs.getString('name') ?? '';
+      lastName = prefs.getString('last_name') ?? '';
+      username = prefs.getString('username') ?? '';
+      phoneNumber = prefs.getString('phone_number') ?? '';
+      country = prefs.getString('country') ?? '';
+      address = prefs.getString('address') ?? '';
+      pincode = prefs.getString('pincode') ?? '';
+      userRole = prefs.getString('user') ?? 'user';
+      isLoading = false; // Once user details are loaded
+    });
   }
 
   Future<void> _loadUserRole() async {
@@ -274,6 +297,13 @@ class _ShopPageState extends State<ShopPage> {
                           builder: (context) => ProductDetailPage(
                             product: filteredProducts[index],
                             userRole: userRole,
+                            firstName: firstName,
+                            lastName: lastName,
+                            username: username,
+                            phoneNumber: phoneNumber,
+                            country: country,
+                            userAddress: address,
+                            userPincode: pincode,
                           ),
                         ),
                       );
@@ -608,54 +638,223 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
     );
   }
 }
+class PaymentService {
+  final String baseUrl = 'https://gym-management-2.onrender.com/payment/';
 
+  Future<Map<String, dynamic>> makePayment({
+    required String username,
+    required String firstName,
+    required String lastName,
+    required String gymId,
+    required String productType,
+    required String stripePriceId,
+    required String userId,
+    required String promoCode,
+    required String productId,
+    required String address,
+    required String phoneNumber,
+    required String country,
+    required String pinCode,
+    required String paymentType,
+  }) async {
+    try {
+      final url = Uri.parse(baseUrl);
+      final headers = {
+        'Content-Type': 'application/json',
+      };
 
-class ProductDetailPage extends StatelessWidget {
+      final body = jsonEncode({
+        'username': username,
+        'first_name': firstName,
+        'last_name': lastName,
+        'gym_id': gymId,
+        'product_type': productType,
+        'stripe_price_id': stripePriceId,
+        'user_id': userId,
+        'promo_code': promoCode,
+        'product_id': productId,
+        'address': address,
+        'phone_number': phoneNumber,
+        'country': country,
+        'pin_code': pinCode,
+        'payment_type': paymentType,
+      });
+
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        print(data);
+        return data;
+      } else {
+        return {'error': 'Failed to process payment. Please try again.'};
+      }
+    } catch (e) {
+      return {'error': 'An error occurred: $e'};
+    }
+  }
+}
+
+class ProductDetailPage extends StatefulWidget {
   final Map<String, dynamic> product;
   final String userRole;
+  final String firstName;
+  final String lastName;
+  final String username;
+  final String phoneNumber;
+  final String country;
+  final String userAddress;
+  final String userPincode;
 
-  const ProductDetailPage({Key? key, required this.product, required this.userRole}) : super(key: key);
+  const ProductDetailPage({
+    Key? key,
+    required this.product,
+    required this.userRole,
+    required this.firstName,
+    required this.lastName,
+    required this.username,
+    required this.phoneNumber,
+    required this.country,
+    required this.userAddress,
+    required this.userPincode,
+  }) : super(key: key);
+
+  @override
+  _ProductDetailPageState createState() => _ProductDetailPageState();
+}
+
+class _ProductDetailPageState extends State<ProductDetailPage> {
+  final PaymentService _paymentService = PaymentService();
+  bool isLoading = false;
+  String responseMessage = '';
+  String sessionUrl = '';
+  Future<void> processPayment() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await _paymentService.makePayment(
+        username: widget.username,
+        firstName: widget.firstName,
+        lastName: widget.lastName,
+        gymId: widget.product['Gym'],
+        productType: widget.product['type'],
+        stripePriceId: widget.product['stripe_price_id'],
+        userId: prefs.getString('user_id') ?? '',
+        promoCode: "12345",
+        productId: widget.product['id'],
+        address: widget.userAddress,
+        phoneNumber: widget.phoneNumber,
+        country: widget.country,
+        pinCode: widget.userPincode,
+        paymentType: "card", // Placeholder for payment method
+      );
+
+      setState(() {
+        isLoading = false;
+
+        if (response.containsKey('error')) {
+          responseMessage = response['error'];
+        } else if (response['sessionUrl'] != null) {
+          sessionUrl = response['sessionUrl']; // Fetch the sessionUrl safely
+          // Navigate to WebView with sessionUrl
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PaymentWebViewPage(sessionUrl: sessionUrl),
+            ),
+          );
+        } else {
+          responseMessage = 'Payment failed. No session URL found.';
+        }
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        responseMessage = 'An error occurred: $e';
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(product['name']),
+        title: Text(widget.product['name']),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network('https://gym-management-2.onrender.com/products/${product['image']}'),
+            Image.network('https://gym-management-2.onrender.com/products/${widget.product['image']}'),
             const SizedBox(height: 16.0),
             Text(
-              product['desc'],
+              widget.product['desc'],
               style: const TextStyle(fontSize: 18.0),
             ),
             const SizedBox(height: 16.0),
             Text(
-              '\$${product['price']}',
+              '\$${widget.product['price']}',
               style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16.0),
-            Text('Stock: ${product['stock']}'),
+            Text('Stock: ${widget.product['stock']}'),
             const SizedBox(height: 16.0),
-            Text('Reviews: ${product['reviews']}'),
-            if (userRole != 'admin') ...[
+            Text('Reviews: ${widget.product['reviews']}'),
+            const SizedBox(height: 16.0),
+            Text('User Role: ${widget.userRole}'),
+            Text('First Name: ${widget.firstName}'),
+            Text('Last Name: ${widget.lastName}'),
+            Text('Username: ${widget.username}'),
+            Text('Phone Number: ${widget.phoneNumber}'),
+            Text('Country: ${widget.country}'),
+            Text('Address: ${widget.userAddress}'),
+            Text('Pincode: ${widget.userPincode}'),
+            if (widget.userRole != 'admin') ...[
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
-                  // Implement add to cart functionality
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Added to cart')),
-                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaymentPage(planId: widget.product['id'],priceId:widget.product['stripe_price_id'],type:widget.product['type'],gymId: widget.product['Gym'],),
+                    ),
+                  ); // Trigger payment on button click
                 },
-                child: const Text('Add to Cart'),
+                child: const Text('Buy Now'),
               ),
+              const SizedBox(height: 20),
+              if (isLoading) ...[
+                const Center(child: CircularProgressIndicator())
+              ] else if (responseMessage.isNotEmpty) ...[
+                Text(responseMessage),
+              ],
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+class PaymentWebViewPage extends StatelessWidget {
+  final String sessionUrl;
+
+  const PaymentWebViewPage({Key? key, required this.sessionUrl}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Complete Payment'),
+      ),
+      body: WebView(
+        initialUrl: sessionUrl,
+        javascriptMode: JavascriptMode.unrestricted,
       ),
     );
   }
