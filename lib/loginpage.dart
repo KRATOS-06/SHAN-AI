@@ -35,6 +35,9 @@ class _LoginPageState extends State<LoginPage> {
     } else if (user == "SuperUser") {
       url = Uri.parse(
           'https://gym-management-2.onrender.com/accounts/superlogin/');
+    } else if (user == "Mentor") {
+      url = Uri.parse(
+          'https://gym-management-2.onrender.com/mentors/login/');
     } else {
       url = Uri.parse(
           'https://gym-management-2.onrender.com/accounts/user_login');
@@ -52,12 +55,17 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       final Map<String, dynamic> responseData = json.decode(response.body);
-      final String userId = responseData['user_id'];
-
+      final String userId;
+      if (user == "Mentor") {
+        userId = responseData['mentor_id']??"";
+      }else{
+        userId = responseData['user_id']??"";
+      }
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
       if (response.statusCode == 200 && user == "SuperUser") {
         // Login successful
+
         await prefs.setString('user', "superuser");
         Navigator.pushReplacement(
           context,
@@ -65,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
               builder: (context) => AdminSignInPage(userid: userId)),
         );
       } else if (response.statusCode == 200 &&
-          (user == "Admin" || user == "User")) {
+          (user == "Admin" || user == "User" || user == "Mentor")) {
         print('hi');
 
         await prefs.setString('user_id', userId);
@@ -74,6 +82,9 @@ class _LoginPageState extends State<LoginPage> {
           final String? gymId = responseData['gym_id'];
           await prefs.setString('gym_id', gymId ?? "null");
           await prefs.setString('user', "admin");
+        }
+        else if (user == "Mentor") {
+          await prefs.setString('user', "mentor");
         }
         else {
           await prefs.setString('user', "user");
@@ -165,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                       color: const Color(0xff066589),
                       padding: const EdgeInsets.all(8),
                       child: Text(
-                        user, // Displays the selected user
+                        user,
                         style: const TextStyle(
                           color: Colors.white,
                           backgroundColor: Color(0xff066589),
@@ -174,22 +185,18 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     onExpansionChanged: (bool expanded) {
                       setState(() {
-                        ischecked =
-                            expanded; // Update the expansion state for color change
+                        ischecked = expanded;
                       });
                     },
                     children: [
                       Container(
                         color: const Color(0xff066589),
-                        // Solid color for the expanded content
                         child: ListTile(
-                          title: Text(user == "Admin" ? "User" : "Admin"),
+                          title: Text(user == "User" ? "Admin" : "User"),
                           onTap: () {
                             setState(() {
-                              user = user == "Admin"
-                                  ? "User"
-                                  : "Admin"; // Update the user variable to "Admin"
-                              ischecked = false; // Collapse after selection
+                              user = user == "User" ? "Admin" : "User";
+                              ischecked = false;
                             });
                           },
                         ),
@@ -197,14 +204,23 @@ class _LoginPageState extends State<LoginPage> {
                       Container(
                         color: const Color(0xff066589),
                         child: ListTile(
-                          title:
-                          Text(user == "SuperUser" ? "User" : "SuperUser"),
+                          title: Text(user == "SuperUser" ? "User" : "SuperUser"),
                           onTap: () {
                             setState(() {
-                              user = user == "SuperUser"
-                                  ? "User"
-                                  : "SuperUser"; // Switch between SuperUser and User
-                              ischecked = false; // Collapse after selection
+                              user = user == "SuperUser" ? "User" : "SuperUser";
+                              ischecked = false;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        color: const Color(0xff066589),
+                        child: ListTile(
+                          title: Text(user == "Mentor" ? "User" : "Mentor"),
+                          onTap: () {
+                            setState(() {
+                              user = user == "Mentor" ? "User" : "Mentor";
+                              ischecked = false;
                             });
                           },
                         ),
@@ -309,36 +325,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
 
-                  /* Row(
-                    children: [
-                     /* Transform.scale(
-                        scale: screenSize.width * 0.005,
-                        child: Checkbox(
-                          value: checked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              checked = value ?? false;
-                            });
-                          },
-                        ),
-                      ),*/
-                      /*  Text(
-                        "keep logged in",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: screenSize.width * 0.045),
-                      ),*/
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          "                                              Forget Password?",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: screenSize.width * 0.045),
-                        ),
-                      ),
-                    ],
-                  ),*/
+
                 ),
                 Positioned(
                   top: screenSize.height * 0.77,

@@ -171,6 +171,46 @@ class _MentorPageState extends State<MentorPage> {
       });
     }
   }
+  void _editMentor(dynamic mentor) {
+    // TODO: Implement edit functionality
+    print('Editing mentor: ${mentor['first_name']} ${mentor['last_name']}');
+  }
+
+  Future<void> _deleteMentor(dynamic mentor) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? adminId = prefs.getString('user_id');
+      String? mentorId = mentor['id'];
+
+      if (adminId == null) {
+        throw Exception('Admin ID not found in SharedPreferences');
+      }
+
+      final response = await http.delete(
+        Uri.parse(
+            'https://gym-management-2.onrender.com/mentors/?admin=$adminId&mentor_id=$mentorId'),
+        headers: {'accept': 'application/json'},
+      );
+
+      if (response.statusCode == 204) {
+        // Mentor deleted successfully
+        setState(() {
+          mentors.removeWhere((m) => m['id'] == mentorId);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Mentor deleted successfully')),
+        );
+      } else {
+        print(mentorId);
+        throw Exception('Failed to delete mentor: ${response.body}');
+      }
+    } catch (e) {
+      print('Error deleting mentor: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete mentor: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -203,6 +243,19 @@ class _MentorPageState extends State<MentorPage> {
                 ],
               ),
               isThreeLine: true,
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () => _editMentor(mentor),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => _deleteMentor(mentor),
+                  ),
+                ],
+              ),
             ),
           );
         },

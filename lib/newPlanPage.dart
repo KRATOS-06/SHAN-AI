@@ -18,6 +18,7 @@ class _NewPlanPageState extends State<NewPlanPage> {
   String? description;
   int? price;
   String? interval;
+  String? interval_count;
   bool isLoading = false;
   String errorMessage = '';
 
@@ -52,13 +53,18 @@ class _NewPlanPageState extends State<NewPlanPage> {
           'admin': adminId,
           'gym_id': widget.gymId,
           'interval': interval,
+          'interval_count':interval_count,
         }),
       );
 
       if (response.statusCode == 201) {
-        Navigator.pop(context, true); // Go back to PlansPage with success
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewPlanPage(gymId: widget.gymId),
+          ),
+        ); // Go back to PlansPage with success
       } else {
-        print(response.body);
         print(response.statusCode);
         setState(() {
           errorMessage = 'Failed to create plan';
@@ -108,6 +114,11 @@ class _NewPlanPageState extends State<NewPlanPage> {
                 decoration: InputDecoration(labelText: 'Interval'),
                 validator: (value) => value!.isEmpty ? 'Please enter interval' : null,
                 onSaved: (value) => interval = value,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Interval count'),
+                validator: (value) => value!.isEmpty ? 'Please enter interval' : null,
+                onSaved: (value) => interval_count = value,
               ),
               SizedBox(height: 20),
               if (isLoading) CircularProgressIndicator(),

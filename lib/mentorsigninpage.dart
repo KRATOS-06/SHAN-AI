@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:gym_management/loginpage.dart';
+import 'package:gym_management/gym_details_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MentorSignInPage extends StatefulWidget {
@@ -107,37 +107,46 @@ class _MentorSignInPageState extends State<MentorSignInPage> {
   }
 
   Future<void> _submitForm() async {
+    // Obtain the gym ID and admin ID from SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String gymId = prefs.getString('gym_id') ?? '';
     String adminId = prefs.getString('user_id') ?? '';
+
+    // Validate form inputs
     if (_formKey.currentState!.validate()) {
       try {
+        // Send the POST request
         final response = await http.post(
-          Uri.parse('https://gym-management-2.onrender.com/accounts/mentors/'),
+          Uri.parse('https://gym-management-2.onrender.com/mentors/'),
           headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
+            'Content-Type': 'application/json',
+            'accept': 'application/json',
           },
           body: jsonEncode(<String, String>{
-            'admin': adminId,
-            'username': _usernameController.text,
-            'first_name': _firstNameController.text,
-            'last_name': _lastNameController.text,
-            'expertise': _expertiseController.text,
-            'email': _emailController.text,
-            'phone_number': _phoneNumberController.text,
-            'password1': _password1Controller.text,
-            'password2': _password2Controller.text,
-            'gym_id': gymId,
+            'admin': adminId,                      // Admin ID
+            'username': _usernameController.text,   // Username
+            'first_name': _firstNameController.text,// First Name
+            'last_name': _lastNameController.text,  // Last Name
+            'expertise': _expertiseController.text, // Expertise
+            'email': _emailController.text,         // Email
+            'phone_number': _phoneNumberController.text, // Phone Number
+            'password1': _password1Controller.text, // Password 1
+            'password2': _password2Controller.text, // Password 2
+            'gym_id': gymId,                        // Gym ID
           }),
         );
 
+        // Handle success response
         if (response.statusCode == 201) {
           print('Registration successful ${response.body}');
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(
+              builder: (context) => MentorPage(),
+            ),
           );
         } else {
+          // Handle error responses
           print('Failed to register: ${response.body}');
           final Map<String, dynamic> responseData = json.decode(response.body);
           final errorMessage = responseData['message'] ?? 'Unknown error';
@@ -146,6 +155,7 @@ class _MentorSignInPageState extends State<MentorSignInPage> {
           );
         }
       } catch (e) {
+        // Handle network errors
         print('An error occurred: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Network error: Unable to register')),

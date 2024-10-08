@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:gym_management/profilepage.dart';
+import 'package:gym_management/adminProfilePage.dart';
 import 'package:gym_management/reviewpage2.dart';
 import 'package:gym_management/shoppage.dart';
 import 'package:gym_management/membership.dart';
@@ -364,8 +364,11 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
             leading: const Icon(Icons.person),
             title: const Text('Profile'),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const ProfilePage()));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => UserProfilePage(),
+                ),
+              );
             },
           ),
           ListTile(
@@ -637,10 +640,11 @@ class _AddEventPageState extends State<AddEventPage> {
         } else {
           // If the server did not return a 201 CREATED response,
           // throw an exception.
+          print(response.statusCode);
           throw Exception('Failed to create event');
         }
       } catch (e) {
-        // Show error message
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error creating event: $e')),
         );
