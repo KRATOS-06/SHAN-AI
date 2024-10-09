@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_management/adminsigninpage.dart';
 import 'package:gym_management/homepage.dart';
-import 'package:gym_management/forgot_password_page.dart';
 import 'package:gym_management/signinpage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -29,19 +28,18 @@ class _LoginPageState extends State<LoginPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print(user);
     Uri url;
+
+    // Login URLs based on user type
     if (user == "Admin") {
-      url = Uri.parse(
-          'https://gym-management-2.onrender.com/accounts/admin_login');
+      url = Uri.parse('https://gym-management-2.onrender.com/accounts/admin_login');
     } else if (user == "SuperUser") {
-      url = Uri.parse(
-          'https://gym-management-2.onrender.com/accounts/superlogin/');
+      url = Uri.parse('https://gym-management-2.onrender.com/accounts/superlogin/');
     } else if (user == "Mentor") {
-      url = Uri.parse(
-          'https://gym-management-2.onrender.com/mentors/login/');
+      url = Uri.parse('https://gym-management-2.onrender.com/mentors/login/');
     } else {
-      url = Uri.parse(
-          'https://gym-management-2.onrender.com/accounts/user_login');
+      url = Uri.parse('https://gym-management-2.onrender.com/accounts/user_login');
     }
+
     try {
       final response = await http.post(
         url,
@@ -56,38 +54,54 @@ class _LoginPageState extends State<LoginPage> {
 
       final Map<String, dynamic> responseData = json.decode(response.body);
       final String userId;
+      final String? gymId = responseData['gym_id'];
+      
       if (user == "Mentor") {
-        userId = responseData['mentor_id']??"";
-      }else{
-        userId = responseData['user_id']??"";
+        userId = responseData['mentor_id'] ?? "";
+      } else {
+        userId = responseData['user_id'] ?? "";
       }
+
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
-      if (response.statusCode == 200 && user == "SuperUser") {
-        // Login successful
 
+      if (response.statusCode == 200 && user == "SuperUser") {
         await prefs.setString('user', "superuser");
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-              builder: (context) => AdminSignInPage(userid: userId)),
+          MaterialPageRoute(builder: (context) => AdminSignInPage(userid: userId)),
         );
-      } else if (response.statusCode == 200 &&
-          (user == "Admin" || user == "User" || user == "Mentor")) {
-        print('hi');
-
+      } else if (response.statusCode == 200 && 
+                (user == "Admin" || user == "User" || user == "Mentor")) {
         await prefs.setString('user_id', userId);
+        await prefs.setString('gym_id', gymId ?? "");
         await prefs.setBool('islogin', true);
-        if (user == "Admin"){
-          final String? gymId = responseData['gym_id'];
+
+        if (user == "Admin") {
           await prefs.setString('gym_id', gymId ?? "null");
           await prefs.setString('user', "admin");
-        }
-        else if (user == "Mentor") {
+        } else if (user == "Mentor") {
           await prefs.setString('user', "mentor");
-        }
-        else {
+        } else if (user == "User") {
           await prefs.setString('user', "user");
+          
+          // Fetch user details
+          final userResponse = await http.get(
+            Uri.parse('https://gym-management-2.onrender.com/accounts/user_register?id=$userId'),
+          );
+          
+          if (userResponse.statusCode == 200) {
+            final Map<String, dynamic> userData = json.decode(userResponse.body);
+            await prefs.setString('name', userData['username']?.toString() ?? 'Unknown');
+            await prefs.setString('first_name', userData['first_name']?.toString() ?? '');
+            await prefs.setString('last_name', userData['last_name']?.toString() ?? '');
+            await prefs.setString('address', userData['address']?.toString() ?? '');
+            await prefs.setString('pincode', userData['pincode']?.toString() ?? '');
+            await prefs.setString('phone', userData['phone_number']?.toString() ?? '');
+            await prefs.setString('country', userData['country']?.toString() ?? '');
+          } else {
+            print('Failed to fetch user details');
+          }
         }
 
         Navigator.pushReplacement(
@@ -95,9 +109,7 @@ class _LoginPageState extends State<LoginPage> {
           MaterialPageRoute(builder: (context) => WorkoutHomePage()),
         );
       } else {
-        print('hi');
         // Login failed
-        final Map<String, dynamic> responseData = json.decode(response.body);
         final errorMessage = responseData['message'] ?? 'Unknown error';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login failed: $errorMessage')),
@@ -110,6 +122,8 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
+
+      
 
   @override
   Widget build(BuildContext context) {
@@ -311,12 +325,7 @@ class _LoginPageState extends State<LoginPage> {
                   top: screenSize.height * 0.70,
                   left: screenSize.width * 0.56,
                   child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
-                      );
-                    },
+                    onPressed: () {},
                     child: Text(
                       " Forget Password?",
                       style: TextStyle(

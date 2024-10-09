@@ -1,17 +1,20 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gym_management/adminProfilePage.dart';
+import 'package:gym_management/profilepage.dart';
 import 'package:gym_management/reviewpage2.dart';
 import 'package:gym_management/shoppage.dart';
 import 'package:gym_management/membership.dart';
 import 'package:gym_management/contactuspage.dart';
 import 'package:gym_management/mentorpage.dart';
 import 'package:gym_management/loginpage.dart';
+import 'package:gym_management/paymentdetails.dart';
 
 class Event {
-  final String id;
   final String name;
   final String date;
   final String timing;
@@ -22,7 +25,6 @@ class Event {
   final String adminId;
 
   Event({
-    required this.id,
     required this.name,
     required this.date,
     required this.timing,
@@ -32,83 +34,89 @@ class Event {
     required this.gymId,
     required this.adminId,
   });
+}
 
 
-  static Future<Event> fromJsonWithPreferences(Map<String, dynamic> json) async {
+Future<void> _logout(BuildContext context) async {
+  try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String gymId = prefs.getString('gym_id') ?? '';
-    String adminId = prefs.getString('user_id') ?? '';
 
-    return Event(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      date: json['date'] ?? '',
-      timing: json['timing'] ?? '',
-      location: json['location'] ?? '',
-      description: json['description'] ?? '',
-      guestName: json['Guest_name'] ?? '',
-      gymId: gymId,
-      adminId: adminId,
+    // Get user_id from SharedPreferences
+    String? userId = prefs.getString('user_id');
+
+    if (userId != null) {
+      // Post user_id to the logout API
+      final response = await http.post(
+        Uri.parse('https://gym-management-2.onrender.com/accounts/logout/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'user_id': userId,
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to logout on server');
+      }
+    }
+
+    // Clear all relevant user data
+    await prefs.clear(); // Clears all stored data in SharedPreferences
+    print("User has been logged out");
+
+    // Navigate to LoginPage after clearing data
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+
+    // Show a confirmation message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Successfully logged out')),
+    );
+  } catch (error) {
+    // Handle any errors during logout
+    print('Error during logout: $error');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Logout failed. Please try again.')),
     );
   }
 }
+
 class WorkoutHomePage extends StatefulWidget {
-  const WorkoutHomePage({Key? key}) : super(key: key);
+  const WorkoutHomePage({super.key});
 
   @override
   _WorkoutHomePageState createState() => _WorkoutHomePageState();
 }
 
 class _WorkoutHomePageState extends State<WorkoutHomePage> {
-  List<Event> events = [];
+  List<Event> events = [
+    Event(
+      name: "Yoga Workshop",
+      date: "2024-09-20",
+      timing: "10:00 AM - 12:00 PM",
+      location: "Main Gym Hall",
+      description: "Join us for a relaxing yoga session led by expert instructors.",
+      guestName: "Sarah Johnson",
+      gymId: "123e4567-e89b-12d3-a456-426614174000",
+      adminId: "98765432-e89b-12d3-a456-426614174000",
+    ),
+    // Add more events as needed
+  ];
   String userRole = 'user';
-  bool isLoading = true;
-
   @override
   void initState() {
     super.initState();
     _loadUserRole();
-    _fetchEvents();
   }
-
   Future<void> _loadUserRole() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       userRole = prefs.getString('user') ?? 'user';
     });
   }
-
-  Future<void> _fetchEvents() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      final response = await http.get(
-        Uri.parse('https://gym-management-2.onrender.com/events/events/'),
-        headers: {'accept': 'application/json'},
-      );
-      print(response.statusCode);
-      if (response.statusCode == 200) {
-        final List<dynamic> eventsJson = jsonDecode(response.body);
-        List<Event> events = await Future.wait(
-          eventsJson.map((json) => Event.fromJsonWithPreferences(json)).toList(),
-        );
-        setState(() {
-          this.events = events;
-          isLoading = false;
-        });
-      } else {
-        throw Exception('Failed to load events');
-      }
-    } catch (e) {
-      print('Error fetching events: $e');
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -200,11 +208,127 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
     );
   }
 
-  Widget _buildEventStories(BoxConstraints constraints) {
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              color: Color(0xFF00B2B2),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Menu',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+                const SizedBox(height: 0.0),
+                Image.asset(
+                  'assets/gym_logo.png',
+                  height: 150.0,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          if (true) ...[
+            ListTile(
+              leading: const Icon(Icons.fitness_center),
+              title: const Text('Plan'),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => GymPage()));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.people),
+              title: const Text('Mentors'),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MentorsPage()));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.shop),
+              title: const Text('Shop'),
+              onTap: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => ShopPage()));
+              },
+            ),
+          ],
+          if (userRole == 'admin' || userRole == 'mentor') ...[
+            ListTile(
+              leading: const Icon(Icons.event),
+              title: const Text('Manage Events'),
+              onTap: () {
+                _addNewEvent();
+              },
+            ),
+          ],
+          ListTile(
+            leading: const Icon(Icons.rate_review),
+            title: const Text('Reviews'),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const ReviewPage()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.contact_mail),
+            title: const Text('Contact Us'),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ContactUsForm()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Profile'),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => UserProfilePage(),
+                ),
+              );
+            },
+          ),
+          if(userRole == 'admin')
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Payment Details'),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const GymPaymentDetailsPage()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.login),
+            title: const Text('Logout'),
+            onTap: () {
+              _logout(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
+  Widget _buildEventStories(BoxConstraints constraints) {
     return SizedBox(
       height: constraints.maxWidth * 0.25,
       child: ListView.builder(
@@ -275,114 +399,6 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
     );
   }
 
-  Widget _buildDrawer(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            decoration: const BoxDecoration(
-              color: Color(0xFF00B2B2),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Menu',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
-                ),
-                const SizedBox(height: 0.0),
-                Image.asset(
-                  'assets/gym_logo.png',
-                  height: 150.0,
-                  fit: BoxFit.contain,
-                ),
-              ],
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Home'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.fitness_center),
-            title: const Text('Plan'),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => GymPage()));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.people),
-            title: const Text('Mentors'),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MentorsPage()));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.shop),
-            title: const Text('Shop'),
-            onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => ShopPage()));
-            },
-          ),
-          if (userRole == 'admin' || userRole == 'mentor')
-            ListTile(
-              leading: const Icon(Icons.event),
-              title: const Text('Manage Events'),
-              onTap: () {
-                _addNewEvent();
-              },
-            ),
-          ListTile(
-            leading: const Icon(Icons.rate_review),
-            title: const Text('Reviews'),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const ReviewPage()));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.contact_mail),
-            title: const Text('Contact Us'),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ContactUsForm()));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('Profile'),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => UserProfilePage(),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.login),
-            title: const Text('Logout'),
-            onTap: () {
-              _logout(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildWorkoutCard(String title, String description, String imageUrl,
       BoxConstraints constraints) {
     return Container(
@@ -445,6 +461,36 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
       ),
     );
   }
+  void _addNewEvent() {
+    if (userRole == 'admin' || userRole == 'mentor') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddEventPage(
+            onEventAdded: (Event newEvent) {
+              setState(() {
+                events.add(newEvent);
+              });
+            },
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You do not have permission to add events.')),
+      );
+    }
+  }
+
+  void _showEventDetails(Event event) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventDetailsPage(event: event, userRole: userRole),
+      ),
+    );
+  }
+}
 
   Widget _buildFooter(BoxConstraints constraints) {
     return Center(
@@ -490,90 +536,17 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
         ),
       ),
     );
-  }
 
-  void _addNewEvent() {
-    if (userRole == 'admin' || userRole == 'mentor') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AddEventPage(
-            onEventAdded: (Event newEvent) {
-              setState(() {
-                events.add(newEvent);
-              });
-            },
-          ),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You do not have permission to add events.')),
-      );
-    }
-  }
 
-  void _showEventDetails(Event event) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EventDetailsPage(event: event, userRole: userRole),
-      ),
-    );
-  }
-
-  Future<void> _logout(BuildContext context) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      // Get user_id from SharedPreferences
-      String? userId = prefs.getString('user_id');
-
-      if (userId != null) {
-        // Post user_id to the logout API
-        final response = await http.post(
-          Uri.parse('https://gym-management-2.onrender.com/accounts/logout/'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(<String, String>{
-            'user_id': userId,
-          }),
-        );
-
-        if (response.statusCode != 200) {
-          throw Exception('Failed to logout on server');
-        }
-      }
-
-      // Clear all relevant user data
-      await prefs.clear(); // Clears all stored data in SharedPreferences
-      print("User has been logged out");
-
-      // Navigate to LoginPage after clearing data
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-
-      // Show a confirmation message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Successfully logged out')),
-      );
-    } catch (error) {
-      // Handle any errors during logout
-      print('Error during logout: $error');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logout failed. Please try again.')),
-      );
-    }
-  }
 }
+
+
+
 
 class AddEventPage extends StatefulWidget {
   final Function(Event) onEventAdded;
 
-  const AddEventPage({Key? key, required this.onEventAdded}) : super(key: key);
+  const AddEventPage({super.key, required this.onEventAdded});
 
   @override
   _AddEventPageState createState() => _AddEventPageState();
@@ -594,7 +567,7 @@ class _AddEventPageState extends State<AddEventPage> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      // Generate UUIDs for gym_id and admin_id
+      // Retrieve gymId and adminId from SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String gymId = prefs.getString('gym_id') ?? '';
       String adminId = prefs.getString('user_id') ?? '';
@@ -625,7 +598,6 @@ class _AddEventPageState extends State<AddEventPage> {
           final String eventId = responseJson['id']; // Extract the event ID from the response
 
           final newEvent = Event(
-            id: eventId, // Assign the event ID
             name: name,
             date: date,
             timing: timing,
@@ -638,13 +610,10 @@ class _AddEventPageState extends State<AddEventPage> {
           widget.onEventAdded(newEvent);
           Navigator.pop(context);
         } else {
-          // If the server did not return a 201 CREATED response,
-          // throw an exception.
           print(response.statusCode);
           throw Exception('Failed to create event');
         }
       } catch (e) {
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error creating event: $e')),
         );
@@ -727,6 +696,26 @@ class _AddEventPageState extends State<AddEventPage> {
                 },
                 onSaved: (value) => guestName = value!,
               ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Gym ID'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter gym ID';
+                  }
+                  return null;
+                },
+                onSaved: (value) => gymId = value!,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Admin ID'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter admin ID';
+                  }
+                  return null;
+                },
+                onSaved: (value) => adminId = value!,
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                 child: const Text('Add Event'),
@@ -744,44 +733,7 @@ class EventDetailsPage extends StatelessWidget {
   final Event event;
   final String userRole;
 
-  const EventDetailsPage({Key? key, required this.event, required this.userRole}) : super(key: key);
-
-  Future<void> _deleteEvent(BuildContext context) async {
-    final url = Uri.parse('https://gym-management-2.onrender.com/events/events/${event.id}/');
-
-    try {
-      final response = await http.delete(
-        url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'admin_id': event.adminId,
-        }),
-      );
-      print(response.statusCode);
-      if (response.statusCode == 204) {
-        // Successfully deleted
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Event deleted successfully')),
-        );
-        Navigator.pop(context); // Go back to the previous page
-      } else {
-        print(event.id);
-        print(event.adminId);
-        print(event.gymId);
-
-        // If the server did not return a 204 NO CONTENT response,
-        // throw an exception.
-        throw Exception('Failed to delete event');
-      }
-    } catch (e) {
-      // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting event: $e')),
-      );
-    }
-  }
+  const EventDetailsPage({super.key, required this.event, required this.userRole});
 
   @override
   Widget build(BuildContext context) {
@@ -809,218 +761,17 @@ class EventDetailsPage extends StatelessWidget {
             if (userRole == 'admin') ...[
               Text('Gym ID: ${event.gymId}', style: const TextStyle(fontSize: 14, color: Colors.grey)),
               Text('Admin ID: ${event.adminId}', style: const TextStyle(fontSize: 14, color: Colors.grey)),
+            ],
+            if (userRole == 'admin' || userRole == 'trainer') ...[
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    child: const Text('Edit Event'),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditEventPage(
-                            event: event, // Assuming 'event' is the current event object
-                            onEventUpdated: (updatedEvent) {
-                              Navigator.pop(context); // Go back to the previous screen
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  ElevatedButton(
-                    child: const Text('Delete Event'),
-                    onPressed: () => _deleteEvent(context),
-                  ),
-                ],
+              ElevatedButton(
+                child: const Text('Edit Event'),
+                onPressed: () {
+                  
+                },
               ),
             ],
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class EditEventPage extends StatefulWidget {
-  final Event event;
-  final Function(Event) onEventUpdated;
-
-  const EditEventPage({Key? key, required this.event, required this.onEventUpdated}) : super(key: key);
-
-  @override
-  _EditEventPageState createState() => _EditEventPageState();
-}
-
-class _EditEventPageState extends State<EditEventPage> {
-  final _formKey = GlobalKey<FormState>();
-  late String name;
-  late String date;
-  late String timing;
-  late String location;
-  late String description;
-  late String guestName;
-  late String gymId;
-  late String adminId;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize the form fields with the existing event data
-    name = widget.event.name;
-    date = widget.event.date;
-    timing = widget.event.timing;
-    location = widget.event.location;
-    description = widget.event.description;
-    guestName = widget.event.guestName;
-    gymId = widget.event.gymId;
-    adminId = widget.event.adminId;
-  }
-
-  Future<void> _submitEvent() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      final url = Uri.parse('https://gym-management-2.onrender.com/events/update-event/');
-
-      try {
-        final response = await http.put(
-          url,
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(<String, dynamic>{
-            'event_id': widget.event.id,
-            'name': name,
-            'date': date,
-            'timing': timing,
-            'location': location,
-            'description': description,
-            'gym_id': gymId,
-            'admin_id': adminId,
-          }),
-        );
-
-        if (response.statusCode == 200) {
-          // Successfully updated
-          final updatedEvent = Event(
-            id: widget.event.id,
-            name: name,
-            date: date,
-            timing: timing,
-            location: location,
-            description: description,
-            guestName: guestName,
-            gymId: gymId,
-            adminId: adminId,
-          );
-          widget.onEventUpdated(updatedEvent);
-          print("ok");
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const WorkoutHomePage()));
-        } else {
-          // If the server did not return a 200 OK response,
-          // throw an exception.
-          throw Exception('Failed to update event');
-        }
-      } catch (e) {
-        // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating event: $e')),
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Event'),
-        backgroundColor: const Color(0xFF00B2B2),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                initialValue: name,
-                decoration: const InputDecoration(labelText: 'Event Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter event name';
-                  }
-                  return null;
-                },
-                onSaved: (value) => name = value!,
-              ),
-              TextFormField(
-                initialValue: date,
-                decoration: const InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter date';
-                  }
-                  return null;
-                },
-                onSaved: (value) => date = value!,
-              ),
-              TextFormField(
-                initialValue: timing,
-                decoration: const InputDecoration(labelText: 'Timing'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter timing';
-                  }
-                  return null;
-                },
-                onSaved: (value) => timing = value!,
-              ),
-              TextFormField(
-                initialValue: location,
-                decoration: const InputDecoration(labelText: 'Location'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter location';
-                  }
-                  return null;
-                },
-                onSaved: (value) => location = value!,
-              ),
-              TextFormField(
-                initialValue: description,
-                decoration: const InputDecoration(labelText: 'Description'),
-                maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter description';
-                  }
-                  return null;
-                },
-                onSaved: (value) => description = value!,
-              ),
-              TextFormField(
-                initialValue: guestName,
-                decoration: const InputDecoration(labelText: 'Guest Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter guest name';
-                  }
-                  return null;
-                },
-                onSaved: (value) => guestName = value!,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                child: const Text('Update Event'),
-                onPressed: _submitEvent,
-              ),
-            ],
-          ),
         ),
       ),
     );

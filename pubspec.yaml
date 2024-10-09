@@ -44,6 +44,8 @@ dependencies:
   circle_wheel_scroll: ^0.0.3
   list_wheel_scroll_view_nls: ^0.0.3
   fl_chart: ^0.69.0
+  webview_flutter: 3.0.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
