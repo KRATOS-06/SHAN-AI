@@ -188,18 +188,6 @@ class _ShopPageState extends State<ShopPage> {
       request.fields['gym_id'] = prefs.getString('gym_id') ?? ''; // Gym ID
       request.fields['product_id'] = productId;  // Product ID for updating
 
-      // Optionally include fields like name, price, type, desc if needed
-      // request.fields['name'] = name;
-      // request.fields['price'] = price;
-      // request.fields['type'] = type;
-      // request.fields['desc'] = desc;
-      // request.fields['reviews'] = reviews;
-      //
-      // // Add image file if provided (optional)
-      // if (image != null) {
-      //   var pic = await http.MultipartFile.fromPath('image', image.path);
-      //   request.files.add(pic);
-      // }
 
       // Send the request
       var response = await request.send();

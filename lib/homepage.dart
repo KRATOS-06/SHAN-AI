@@ -1,5 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gym_management/adminProfilePage.dart';
 import 'package:gym_management/profilepage.dart';
 import 'package:gym_management/reviewpage2.dart';
 import 'package:gym_management/shoppage.dart';
@@ -7,9 +12,6 @@ import 'package:gym_management/membership.dart';
 import 'package:gym_management/contactuspage.dart';
 import 'package:gym_management/mentorpage.dart';
 import 'package:gym_management/loginpage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:gym_management/paymentdetails.dart';
 
 class Event {
@@ -298,8 +300,11 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
             leading: const Icon(Icons.person),
             title: const Text('Profile'),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const ProfilePage()));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => UserProfilePage(),
+                ),
+              );
             },
           ),
           if(userRole == 'admin')
@@ -537,6 +542,7 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
 
 
 
+
 class AddEventPage extends StatefulWidget {
   final Function(Event) onEventAdded;
 
@@ -556,6 +562,64 @@ class _AddEventPageState extends State<AddEventPage> {
   String guestName = '';
   String gymId = '';
   String adminId = '';
+
+  Future<void> _submitEvent() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      // Retrieve gymId and adminId from SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String gymId = prefs.getString('gym_id') ?? '';
+      String adminId = prefs.getString('user_id') ?? '';
+
+      final url = Uri.parse('https://gym-management-2.onrender.com/events/add-event/');
+
+      try {
+        final response = await http.post(
+          url,
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, dynamic>{
+            'name': name,
+            'date': date,
+            'timing': timing,
+            'location': location,
+            'description': description,
+            'Guest_name': guestName,
+            'gym_id': gymId,
+            'admin_id': adminId,
+          }),
+        );
+
+        if (response.statusCode == 201) {
+          // Successfully created
+          final responseJson = jsonDecode(response.body);
+          final String eventId = responseJson['id']; // Extract the event ID from the response
+
+          final newEvent = Event(
+            name: name,
+            date: date,
+            timing: timing,
+            location: location,
+            description: description,
+            guestName: guestName,
+            gymId: gymId,
+            adminId: adminId,
+          );
+          widget.onEventAdded(newEvent);
+          Navigator.pop(context);
+        } else {
+          print(response.statusCode);
+          throw Exception('Failed to create event');
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error creating event: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -655,23 +719,7 @@ class _AddEventPageState extends State<AddEventPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 child: const Text('Add Event'),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    final newEvent = Event(
-                      name: name,
-                      date: date,
-                      timing: timing,
-                      location: location,
-                      description: description,
-                      guestName: guestName,
-                      gymId: gymId,
-                      adminId: adminId,
-                    );
-                    widget.onEventAdded(newEvent);
-                    Navigator.pop(context);
-                  }
-                },
+                onPressed: _submitEvent,
               ),
             ],
           ),
@@ -719,7 +767,7 @@ class EventDetailsPage extends StatelessWidget {
               ElevatedButton(
                 child: const Text('Edit Event'),
                 onPressed: () {
-                  // Implement edit event functionality
+                  
                 },
               ),
             ],

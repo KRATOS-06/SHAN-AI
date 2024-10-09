@@ -34,6 +34,8 @@ class _LoginPageState extends State<LoginPage> {
       url = Uri.parse('https://gym-management-2.onrender.com/accounts/admin_login');
     } else if (user == "SuperUser") {
       url = Uri.parse('https://gym-management-2.onrender.com/accounts/superlogin/');
+    } else if (user == "Mentor") {
+      url = Uri.parse('https://gym-management-2.onrender.com/mentors/login/');
     } else {
       url = Uri.parse('https://gym-management-2.onrender.com/accounts/user_login');
     }
@@ -51,55 +53,52 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       final Map<String, dynamic> responseData = json.decode(response.body);
-      final String userId = responseData['user_id'] as String? ?? '';
-      final String gymId = responseData['gym_id'] as String? ?? '';
+      final String userId;
+      final String? gymId = responseData['gym_id'];
+      
+      if (user == "Mentor") {
+        userId = responseData['mentor_id'] ?? "";
+      } else {
+        userId = responseData['user_id'] ?? "";
+      }
 
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
-
       if (response.statusCode == 200 && user == "SuperUser") {
-        // SuperUser login
         await prefs.setString('user', "superuser");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => AdminSignInPage(userid: userId)),
         );
-      } else if (response.statusCode == 200 && (user == "Admin" || user == "User")) {
+      } else if (response.statusCode == 200 && 
+                (user == "Admin" || user == "User" || user == "Mentor")) {
         await prefs.setString('user_id', userId);
         await prefs.setString('gym_id', gymId ?? "");
         await prefs.setBool('islogin', true);
 
-        if (user == "User")
-          // Fetch admin details
-         {
+        if (user == "Admin") {
+          await prefs.setString('gym_id', gymId ?? "null");
+          await prefs.setString('user', "admin");
+        } else if (user == "Mentor") {
+          await prefs.setString('user', "mentor");
+        } else if (user == "User") {
+          await prefs.setString('user', "user");
+          
           // Fetch user details
           final userResponse = await http.get(
             Uri.parse('https://gym-management-2.onrender.com/accounts/user_register?id=$userId'),
           );
-          print(userResponse.statusCode);
-          print(userResponse.body);
+          
           if (userResponse.statusCode == 200) {
             final Map<String, dynamic> userData = json.decode(userResponse.body);
-            // Handle user details if needed
-            final String userName = userData['username']?.toString() ?? 'Unknown';
-            final String userFirstName = userData['first_name']?.toString() ?? 'Unknown';
-            final String userLastName = userData['last_name']?.toString() ?? 'Unknown';
-            final String userAddress = userData['address']?.toString() ?? 'Unknown';
-            final String userPincode = userData['pincode']?.toString() ?? 'Unknown';
-            final String userPhone = userData['phone_number']?.toString() ?? 'Unknown';
-            final String userCountry = userData['country']?.toString() ?? 'Unknown';
-
-            // Storing user details in SharedPreferences
-            await prefs.setString('user', "user");
-            await prefs.setString('name', userName);
-            await prefs.setString('first_name', userFirstName ?? "");
-            await prefs.setString('last_name', userLastName ?? "");
-            await prefs.setString('address', userAddress ?? "");
-            await prefs.setString('pincode', userPincode ?? "");
-            await prefs.setString('phone', userPhone ?? "");
-            await prefs.setString('country', userCountry ?? "");
-
+            await prefs.setString('name', userData['username']?.toString() ?? 'Unknown');
+            await prefs.setString('first_name', userData['first_name']?.toString() ?? '');
+            await prefs.setString('last_name', userData['last_name']?.toString() ?? '');
+            await prefs.setString('address', userData['address']?.toString() ?? '');
+            await prefs.setString('pincode', userData['pincode']?.toString() ?? '');
+            await prefs.setString('phone', userData['phone_number']?.toString() ?? '');
+            await prefs.setString('country', userData['country']?.toString() ?? '');
           } else {
             print('Failed to fetch user details');
           }
@@ -123,6 +122,8 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
+
+      
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                       color: const Color(0xff066589),
                       padding: const EdgeInsets.all(8),
                       child: Text(
-                        user, // Displays the selected user
+                        user,
                         style: const TextStyle(
                           color: Colors.white,
                           backgroundColor: Color(0xff066589),
@@ -198,22 +199,18 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     onExpansionChanged: (bool expanded) {
                       setState(() {
-                        ischecked =
-                            expanded; // Update the expansion state for color change
+                        ischecked = expanded;
                       });
                     },
                     children: [
                       Container(
                         color: const Color(0xff066589),
-                        // Solid color for the expanded content
                         child: ListTile(
-                          title: Text(user == "Admin" ? "User" : "Admin"),
+                          title: Text(user == "User" ? "Admin" : "User"),
                           onTap: () {
                             setState(() {
-                              user = user == "Admin"
-                                  ? "User"
-                                  : "Admin"; // Update the user variable to "Admin"
-                              ischecked = false; // Collapse after selection
+                              user = user == "User" ? "Admin" : "User";
+                              ischecked = false;
                             });
                           },
                         ),
@@ -221,14 +218,23 @@ class _LoginPageState extends State<LoginPage> {
                       Container(
                         color: const Color(0xff066589),
                         child: ListTile(
-                          title:
-                          Text(user == "SuperUser" ? "User" : "SuperUser"),
+                          title: Text(user == "SuperUser" ? "User" : "SuperUser"),
                           onTap: () {
                             setState(() {
-                              user = user == "SuperUser"
-                                  ? "User"
-                                  : "SuperUser"; // Switch between SuperUser and User
-                              ischecked = false; // Collapse after selection
+                              user = user == "SuperUser" ? "User" : "SuperUser";
+                              ischecked = false;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        color: const Color(0xff066589),
+                        child: ListTile(
+                          title: Text(user == "Mentor" ? "User" : "Mentor"),
+                          onTap: () {
+                            setState(() {
+                              user = user == "Mentor" ? "User" : "Mentor";
+                              ischecked = false;
                             });
                           },
                         ),
