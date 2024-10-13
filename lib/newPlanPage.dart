@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'gym_details_page.dart';
+
 class NewPlanPage extends StatefulWidget {
   final String gymId;
 
@@ -57,11 +59,11 @@ class _NewPlanPageState extends State<NewPlanPage> {
         }),
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 201 || response.statusCode == 500) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NewPlanPage(gymId: widget.gymId),
+            builder: (context) => PlansPage(GymId: widget.gymId,),
           ),
         ); // Go back to PlansPage with success
       } else {
