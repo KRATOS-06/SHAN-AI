@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'gym_details_page.dart';
 
 class EditPlanPage extends StatefulWidget {
   final String planId;
@@ -8,8 +11,8 @@ class EditPlanPage extends StatefulWidget {
   final String desc;
   final String price;
   final String interval;
+  final String intervalCount;
   final String gymId;
-  final String adminId;
 
   const EditPlanPage({
     Key? key,
@@ -18,8 +21,8 @@ class EditPlanPage extends StatefulWidget {
     required this.desc,
     required this.price,
     required this.interval,
+    required this.intervalCount,
     required this.gymId,
-    required this.adminId,
   }) : super(key: key);
 
   @override
@@ -28,21 +31,25 @@ class EditPlanPage extends StatefulWidget {
 
 class _EditPlanPageState extends State<EditPlanPage> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _planNameController;
-  late TextEditingController _descController;
-  late TextEditingController _priceController;
-  late TextEditingController _intervalController;
+  late String _planName;
+  late String _desc;
+  late String _price;
+  late String _interval;
+  late String _intervalCount;
 
   @override
   void initState() {
     super.initState();
-    _planNameController = TextEditingController(text: widget.planName);
-    _descController = TextEditingController(text: widget.desc);
-    _priceController = TextEditingController(text: widget.price);
-    _intervalController = TextEditingController(text: widget.interval);
+    _planName = widget.planName;
+    _desc = widget.desc;
+    _price = widget.price;
+    _interval = widget.interval;
+    _intervalCount = widget.intervalCount;
   }
 
   Future<void> updatePlan() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getString('user_id');
     if (_formKey.currentState!.validate()) {
       try {
         final response = await http.put(
@@ -52,12 +59,14 @@ class _EditPlanPageState extends State<EditPlanPage> {
             'Content-Type': 'application/json',
           },
           body: jsonEncode({
-            "plan_name": _planNameController.text,
-            "desc": _descController.text,
-            "price": double.parse(_priceController.text),
-            "admin": widget.adminId,
+            "plan_id": widget.planId,
+            "plan_name": _planName,
+            "desc": _desc,
+            "price": double.parse(_price),
+            "admin": adminId,
             "gym_id": widget.gymId,
-            "interval": _intervalController.text
+            "interval": _interval,
+            "interval_count": _intervalCount
           }),
         );
 
@@ -65,11 +74,19 @@ class _EditPlanPageState extends State<EditPlanPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Plan updated successfully')),
           );
-          Navigator.pop(context, true); // Pop back with success signal
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PlansPage(GymId: widget.gymId),
+            ),
+          );
         } else {
-          throw Exception('Failed to update plan');
+          print('Response status: ${response.statusCode}');
+          print('Response body: ${response.body}');
+          throw Exception('Failed to update plan: ${response.statusCode}');
         }
       } catch (e) {
+        print('Error: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error updating plan: $e')),
         );
@@ -88,52 +105,94 @@ class _EditPlanPageState extends State<EditPlanPage> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
               TextFormField(
-                controller: _planNameController,
+                initialValue: _planName,
                 decoration: InputDecoration(labelText: 'Plan Name'),
+                onSaved: (value) {
+                  _planName = value!;
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a plan name';
                   }
                   return null;
                 },
+
               ),
               TextFormField(
-                controller: _descController,
+                initialValue: _desc,
                 decoration: InputDecoration(labelText: 'Description'),
+                onSaved: (value) {
+                  _desc = value!;
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a description';
                   }
                   return null;
                 },
+
               ),
               TextFormField(
-                controller: _priceController,
+                initialValue: _price,
                 decoration: InputDecoration(labelText: 'Price'),
                 keyboardType: TextInputType.number,
+                onSaved: (value) {
+                  _price = value!;
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a price';
                   }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
                   return null;
                 },
+
               ),
               TextFormField(
-                controller: _intervalController,
+                initialValue: _interval,
                 decoration: InputDecoration(labelText: 'Interval'),
+                onSaved: (value) {
+                  _interval = value!;
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an interval';
                   }
                   return null;
                 },
+
+              ),
+              TextFormField(
+                initialValue: _intervalCount,
+                decoration: InputDecoration(labelText: 'Interval Count'),
+                onSaved: (value) {
+                  _intervalCount = value!;
+                },
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an interval count';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Please enter a valid integer';
+                  }
+                  return null;
+                },
+
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: updatePlan,
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    updatePlan();
+                  }
+                },
                 child: Text('Update Plan'),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(double.infinity, 45),

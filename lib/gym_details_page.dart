@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gym_management/mentorsigninpage.dart';
 import 'package:gym_management/newPlanPage.dart';
 import 'package:gym_management/editPlanPage.dart';
+import 'edit_mentor.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 class GymDetailsPage extends StatelessWidget {
   final Map<String, dynamic> gymDetails;
@@ -173,9 +174,52 @@ class _MentorPageState extends State<MentorPage> {
       });
     }
   }
-  void _editMentor(dynamic mentor) {
-    // TODO: Implement edit functionality
-    print('Editing mentor: ${mentor['first_name']} ${mentor['last_name']}');
+  void _editMentor(dynamic mentor) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String gymId = prefs.getString('gym_id') ?? '';
+    String adminId = prefs.getString('user_id') ?? '';
+
+    // Updated mentor data
+    String mentorId = mentor['mentor_id'];
+    String username = mentor['username'];
+    String firstName = mentor['first_name'];
+    String lastName = mentor['last_name'];
+    String expertise = mentor['expertise'];
+    String email = mentor['email'];
+    String phoneNumber = mentor['phone_number'];
+    String password1 = mentor['password1'];
+    String password2 = mentor['password2'];
+
+    try {
+      final response = await http.put(
+        Uri.parse('https://gym-management-2.onrender.com/mentors/'),
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "admin": adminId,
+          "username": username,
+          "first_name": firstName,
+          "last_name": lastName,
+          "expertise": expertise,
+          "email": email,
+          "phone_number": phoneNumber,
+          "password1": password1,
+          "password2": password2,
+          "mentor_id": mentorId,
+          "gym_id": gymId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print("Mentor updated successfully");
+      } else {
+        print("Failed to update mentor. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
   }
 
   Future<void> _deleteMentor(dynamic mentor) async {
@@ -250,7 +294,19 @@ class _MentorPageState extends State<MentorPage> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.edit, color: Colors.blue),
-                    onPressed: () => _editMentor(mentor),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UpdateMentorPage(
+                            mentor: mentor,
+                            onMentorUpdated: () {
+                              // Refresh your mentor list or details here
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),
@@ -275,6 +331,8 @@ class _MentorPageState extends State<MentorPage> {
     );
   }
 }
+
+
 class PaymentService {
   final String baseUrl = 'https://gym-management-2.onrender.com/payment/';
 
@@ -423,6 +481,7 @@ class _PlansPageState extends State<PlansPage> {
 
         if (responseData is List) {
           setState(() {
+            print(responseData);
             subscriptions = responseData;
             isLoading = false;
           });
@@ -446,17 +505,16 @@ class _PlansPageState extends State<PlansPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String gymId = prefs.getString('gym_id') ?? '';
     String adminId = prefs.getString('user_id') ?? '';
+
     try {
       final response = await http.delete(
-        Uri.parse('https://gym-management-2.onrender.com/subscriptions/'),
+        Uri.parse(
+          'https://gym-management-2.onrender.com/subscriptions/?admin=$adminId&gym_id=$gymId&subscription_id=$planId',
+        ),
         headers: {
           'accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({
-          "admin": adminId, // Send the admin ID
-          "gym_id": gymId, // Send the gym ID
-        }),
       );
 
       if (response.statusCode == 204) {
@@ -468,10 +526,12 @@ class _PlansPageState extends State<PlansPage> {
           SnackBar(content: Text('Plan deleted successfully')),
         );
       } else {
+        print(response.body);
         throw Exception('Failed to delete plan');
       }
     } catch (e) {
       print('Error: $e');
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error deleting plan: $e')),
       );
@@ -527,6 +587,7 @@ class _PlansPageState extends State<PlansPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -545,10 +606,12 @@ class _PlansPageState extends State<PlansPage> {
         itemBuilder: (context, index) {
           final subscription = subscriptions[index];
 
+
           final planName = subscription['plan_name'] ?? 'No name available';
           final desc = subscription['desc'] ?? 'No description available';
           final price = subscription['price']?.toString() ?? 'No price available';
           final interval = subscription['interval'] ?? 'No interval available';
+          final interval_count = subscription['interval_count'] ?? 'No interval available';
           final planId = subscription['id'] ?? '';
           final priceId = subscription['stripe_price_id'];
 
@@ -609,7 +672,10 @@ class _PlansPageState extends State<PlansPage> {
                     SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
-                        // Logic to edit plan
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EditPlanPage(planId:planId, planName:planName, desc: desc, price: price, interval: interval, gymId: gymId, intervalCount:interval_count,)));
                       },
                       child: Text('EDIT PLAN'),
                       style: ElevatedButton.styleFrom(
@@ -630,6 +696,16 @@ class _PlansPageState extends State<PlansPage> {
             ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NewPlanPage(gymId: gymId,)),
+          );
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Color(0xFF00B2B2),
       ),
     );
   }

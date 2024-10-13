@@ -457,7 +457,7 @@ class _UpdateGymPageState extends State<UpdateGymPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String adminId = prefs.getString('user_id') ?? '';
 
-      final Map<String, String> updatedGymData = {
+      final Map<String, dynamic> updatedGymData = {
         "admin": adminId,
         "gym_name": gymName,
         "gym_email": gymEmail,
@@ -465,14 +465,15 @@ class _UpdateGymPageState extends State<UpdateGymPage> {
         "gym_owner_last_name": ownerLastName,
         "gym_address": gymAddress,
         "gym_phone_number": gymPhoneNumber,
-        "promo_code_offers": promoOffers.toString(),
+        "promo_code_offers": promoOffers,
         "promo_code": promoCode
       };
 
       try {
         final response = await http.put(
-          Uri.parse('https://gym-management-2.onrender.com/gyms/${widget.gym['_id']}'),
+          Uri.parse('https://gym-management-2.onrender.com/gyms/'),
           headers: {
+            "accept": "application/json",
             "Content-Type": "application/json",
           },
           body: json.encode(updatedGymData),
