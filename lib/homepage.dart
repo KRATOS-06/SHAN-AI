@@ -13,6 +13,7 @@ import 'package:gym_management/contactuspage.dart';
 import 'package:gym_management/mentorpage.dart';
 import 'package:gym_management/loginpage.dart';
 import 'package:gym_management/paymentdetails.dart';
+import 'package:gym_management/customerpage.dart';
 
 class Event {
   final String name;
@@ -106,6 +107,7 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
     // Add more events as needed
   ];
   String userRole = 'user';
+
   @override
   void initState() {
     super.initState();
@@ -314,6 +316,14 @@ class _WorkoutHomePageState extends State<WorkoutHomePage> {
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const GymPaymentDetailsPage()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('customer'),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) =>  CustomerPage()));
             },
           ),
           ListTile(
